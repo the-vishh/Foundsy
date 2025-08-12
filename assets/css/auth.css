@@ -1,0 +1,755 @@
+/* Authentication Modal Styles for FundFound */
+
+.auth-container {
+  padding: var(--spacing-2xl) var(--spacing-xl);
+  min-height: 500px;
+  position: relative;
+}
+
+.auth-form {
+  display: none;
+  animation: fadeInForm 0.4s ease-out;
+}
+
+.auth-form.active {
+  display: block;
+}
+
+/* Auth Header */
+.auth-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.auth-subtitle {
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   USER TYPE SELECTOR
+   ========================================== */
+
+.user-type-selector {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-2xl);
+  padding: var(--spacing-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+}
+
+.user-type-option {
+  position: relative;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.user-type-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.option-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-lg) var(--spacing-md);
+  background: white;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.option-content:hover {
+  border-color: var(--primary-light);
+  background: var(--primary-50);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.user-type-option input:checked + .option-content {
+  border-color: var(--primary-color);
+  background: var(--primary-color);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.user-type-option input:checked + .option-content .option-icon {
+  color: white;
+}
+
+.option-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--primary-color);
+  transition: color var(--transition-fast);
+}
+
+.option-content span {
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+/* ==========================================
+   FORM ELEMENTS
+   ========================================== */
+
+.auth-form form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: var(--spacing-lg);
+  position: relative;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+  font-size: 0.875rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  background: var(--bg-primary);
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+  background: var(--primary-50);
+}
+
+.form-group input::placeholder {
+  color: var(--text-light);
+}
+
+/* Form Row for side-by-side inputs */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Input validation states */
+.form-group input.error {
+  border-color: var(--error-color);
+  background: #fef2f2;
+}
+
+.form-group input.success {
+  border-color: var(--success-color);
+  background: #f0fdf4;
+}
+
+.form-group input.error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.form-group input.success:focus {
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Error message */
+.error-message {
+  color: var(--error-color);
+  font-size: 0.75rem;
+  margin-top: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.error-message svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* ==========================================
+   FORM OPTIONS (Remember me, Forgot password)
+   ========================================== */
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+/* Custom Checkbox */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  display: none;
+}
+
+.checkmark {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.checkbox-label:hover .checkmark {
+  border-color: var(--primary-color);
+  background: var(--primary-50);
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+  content: '✓';
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  position: absolute;
+}
+
+/* Forgot Password Link */
+.forgot-password {
+  color: var(--primary-color);
+  font-size: 0.875rem;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-sm);
+}
+
+.forgot-password:hover {
+  color: var(--primary-dark);
+  background: var(--primary-50);
+}
+
+/* ==========================================
+   AUTH DIVIDER
+   ========================================== */
+
+.auth-divider {
+  position: relative;
+  text-align: center;
+  margin: var(--spacing-xl) 0;
+}
+
+.auth-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gray-200);
+}
+
+.auth-divider span {
+  background: white;
+  padding: 0 var(--spacing-md);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  position: relative;
+}
+
+/* ==========================================
+   SOCIAL AUTHENTICATION
+   ========================================== */
+
+.social-auth {
+  margin-bottom: var(--spacing-xl);
+}
+
+.btn-social {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: white;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-bottom: var(--spacing-md);
+}
+
+.btn-social:hover {
+  border-color: var(--gray-300);
+  background: var(--gray-50);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-social:active {
+  transform: translateY(0);
+}
+
+.social-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.google-auth:hover {
+  border-color: #4285f4;
+  background: #f8f9ff;
+}
+
+.facebook-auth {
+  background: #1877f2;
+  color: white;
+  border-color: #1877f2;
+}
+
+.facebook-auth:hover {
+  background: #166fe5;
+  border-color: #166fe5;
+}
+
+/* ==========================================
+   FORM SWITCH LINKS
+   ========================================== */
+
+.auth-switch {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-top: var(--spacing-lg);
+}
+
+.auth-switch a {
+  color: var(--primary-color);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  margin-left: var(--spacing-xs);
+}
+
+.auth-switch a:hover {
+  color: var(--primary-dark);
+  background: var(--primary-50);
+}
+
+/* ==========================================
+   LOADING STATES
+   ========================================== */
+
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  margin: auto;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.btn-loading .btn-text {
+  opacity: 0;
+}
+
+/* ==========================================
+   PASSWORD STRENGTH INDICATOR
+   ========================================== */
+
+.password-strength {
+  margin-top: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.strength-bar {
+  height: 4px;
+  background: var(--gray-200);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: var(--spacing-sm);
+}
+
+.strength-fill {
+  height: 100%;
+  transition: all var(--transition-normal);
+  border-radius: 2px;
+}
+
+.strength-fill.weak {
+  width: 25%;
+  background: var(--error-color);
+}
+
+.strength-fill.fair {
+  width: 50%;
+  background: var(--warning-color);
+}
+
+.strength-fill.good {
+  width: 75%;
+  background: var(--info-color);
+}
+
+.strength-fill.strong {
+  width: 100%;
+  background: var(--success-color);
+}
+
+.strength-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.strength-text.weak { color: var(--error-color); }
+.strength-text.fair { color: var(--warning-color); }
+.strength-text.good { color: var(--info-color); }
+.strength-text.strong { color: var(--success-color); }
+
+/* ==========================================
+   TERMS AND CONDITIONS
+   ========================================== */
+
+.terms-checkbox {
+  margin-bottom: var(--spacing-xl);
+}
+
+.terms-checkbox .checkbox-label {
+  align-items: flex-start;
+  line-height: 1.5;
+  gap: var(--spacing-sm);
+}
+
+.terms-checkbox .checkmark {
+  margin-top: 2px;
+}
+
+.terms-checkbox a {
+  color: var(--primary-color);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: all var(--transition-fast);
+}
+
+.terms-checkbox a:hover {
+  text-decoration-color: var(--primary-color);
+  color: var(--primary-dark);
+}
+
+/* ==========================================
+   FORM ANIMATIONS
+   ========================================== */
+
+@keyframes fadeInForm {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Form switching animations */
+.auth-form.switching-out {
+  animation: slideOutLeft 0.3s ease-in forwards;
+}
+
+.auth-form.switching-in {
+  animation: slideInFromRight 0.3s ease-out forwards;
+}
+
+@keyframes slideOutLeft {
+  to {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+}
+
+/* ==========================================
+   SUCCESS/ERROR STATES
+   ========================================== */
+
+.auth-success {
+  text-align: center;
+  padding: var(--spacing-2xl);
+}
+
+.auth-success .success-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--success-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--spacing-lg);
+  color: white;
+}
+
+.auth-success h3 {
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.auth-success p {
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-xl);
+}
+
+.auth-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.auth-error .error-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--error-color);
+  flex-shrink: 0;
+}
+
+.auth-error-message {
+  color: var(--error-color);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+
+@media (max-width: 768px) {
+  .auth-container {
+    padding: var(--spacing-xl) var(--spacing-lg);
+  }
+
+  .auth-title {
+    font-size: 1.75rem;
+  }
+
+  .user-type-selector {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .form-options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+
+  .modal-content {
+    width: 95%;
+    margin: var(--spacing-lg);
+    max-height: calc(100vh - 2rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+
+  .option-content {
+    padding: var(--spacing-md);
+  }
+
+  .option-content span {
+    font-size: 0.8rem;
+  }
+
+  .option-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* ==========================================
+   ACCESSIBILITY IMPROVEMENTS
+   ========================================== */
+
+/* Focus indicators */
+.form-group input:focus,
+.form-group select:focus,
+.user-type-option input:focus + .option-content,
+.checkbox-label input:focus + .checkmark,
+.btn-social:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .auth-form,
+  .option-content,
+  .form-group input,
+  .checkmark,
+  .btn-social,
+  .strength-fill {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .form-group input,
+  .user-type-option .option-content {
+    border-width: 3px;
+  }
+
+  .checkbox-label input:checked + .checkmark {
+    background: var(--text-primary);
+    border-color: var(--text-primary);
+  }
+}
+
+/* ==========================================
+   DARK MODE SUPPORT (Optional)
+   ========================================== */
+
+@media (prefers-color-scheme: dark) {
+  .auth-container {
+    background: var(--gray-800);
+    color: var(--gray-100);
+  }
+
+  .auth-title {
+    color: var(--gray-100);
+  }
+
+  .auth-subtitle {
+    color: var(--gray-400);
+  }
+
+  .form-group input,
+  .form-group select {
+    background: var(--gray-700);
+    border-color: var(--gray-600);
+    color: var(--gray-100);
+  }
+
+  .form-group label {
+    color: var(--gray-200);
+  }
+
+  .user-type-selector {
+    background: var(--gray-700);
+  }
+
+  .option-content {
+    background: var(--gray-800);
+    border-color: var(--gray-600);
+    color: var(--gray-200);
+  }
+
+  .btn-social {
+    background: var(--gray-700);
+    border-color: var(--gray-600);
+    color: var(--gray-200);
+  }
+}
+
+/* ==========================================
+   PRINT STYLES
+   ========================================== */
+
+@media print {
+  .modal,
+  .auth-container {
+    display: none !important;
+  }
+}

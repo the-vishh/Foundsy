@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FundFound- Connecting Investors with Entrepreneurs for mutual growth and success">
+    <meta name="keywords" content="investment, startup, entrepreneur, funding, business ideas">
+    <meta name="author" content="InvestBridge Team">
+
+    <title>InvestBridge - Connecting Investors & Entrepreneurs</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/auth.css">
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Loading FundFound...</p>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="header" id="mainHeader">
+        <nav class="navbar container">
+            <div class="nav-brand">
+                <img src="assets/images/logo.svg" alt="InvestBridge Logo" class="logo-img">
+                <span class="brand-text">FundFound</span>
+            </div>
+
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link active" data-section="home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#browse" class="nav-link" data-section="browse">Browse Ideas</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#how-it-works" class="nav-link" data-section="how-it-works">How It Works</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#about" class="nav-link" data-section="about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#contact" class="nav-link" data-section="contact">Contact</a>
+                </li>
+            </ul>
+
+            <!-- Authentication Buttons (shown when not logged in) -->
+            <div class="auth-buttons" id="authButtons">
+                <button class="btn btn-outline" onclick="showAuthModal('login')">
+                    <i data-lucide="log-in"></i>
+                    Login
+                </button>
+                <button class="btn btn-primary" onclick="showAuthModal('register')">
+                    <i data-lucide="user-plus"></i>
+                    Get Started
+                </button>
+            </div>
+
+            <!-- User Menu (shown when logged in) -->
+            <div class="user-menu hidden" id="userMenu">
+                <div class="user-avatar" id="userAvatar" onclick="toggleUserDropdown()">
+                    <img src="" alt="User Avatar" class="avatar-img hidden" id="avatarImg">
+                    <span class="avatar-text" id="avatarText">U</span>
+                </div>
+                <div class="dropdown-menu hidden" id="userDropdown">
+                    <div class="dropdown-header">
+                        <span class="user-name" id="userName">User Name</span>
+                        <span class="user-type" id="userType">User Type</span>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="#dashboard" class="dropdown-item" data-section="dashboard">
+                        <i data-lucide="layout-dashboard"></i>
+                        Dashboard
+                    </a>
+                    <a href="#profile" class="dropdown-item" data-section="profile">
+                        <i data-lucide="user"></i>
+                        Profile
+                    </a>
+                    <a href="#settings" class="dropdown-item" data-section="settings">
+                        <i data-lucide="settings"></i>
+                        Settings
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item logout-btn" onclick="logout()">
+                        <i data-lucide="log-out"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <i data-lucide="menu"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section id="home" class="section hero-section active">
+            <div class="hero-background">
+                <div class="hero-pattern"></div>
+            </div>
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title">
+                            Bridge the Gap Between
+                            <span class="highlight">Ideas</span> and <span class="highlight">Capital</span>
+                        </h1>
+                        <p class="hero-subtitle">
+                            Connect innovative entrepreneurs with smart investors.
+                            Discover funding opportunities, share business ideas,
+                            and build the future of business together.
+                        </p>
+                        <div class="hero-buttons">
+                            <button class="btn btn-primary btn-large" onclick="showAuthModal('register')">
+                                <i data-lucide="rocket"></i>
+                                Start Your Journey
+                            </button>
+                            <button class="btn btn-outline btn-large" onclick="navigateToSection('browse')">
+                                <i data-lucide="search"></i>
+                                Explore Opportunities
+                            </button>
+                        </div>
+                        <div class="hero-stats">
+                            <div class="stat-item">
+                                <span class="stat-number" id="totalIdeas">250+</span>
+                                <span class="stat-label">Business Ideas</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="totalInvestors">150+</span>
+                                <span class="stat-label">Active Investors</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-number" id="totalFunding">₹50Cr+</span>
+                                <span class="stat-label">Funding Raised</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-visual">
+                        <div class="hero-card card-1">
+                            <div class="card-icon">💡</div>
+                            <h3>Innovative Ideas</h3>
+                            <p>Discover breakthrough business concepts</p>
+                        </div>
+                        <div class="hero-card card-2">
+                            <div class="card-icon">💰</div>
+                            <h3>Smart Investment</h3>
+                            <p>Connect with verified investors</p>
+                        </div>
+                        <div class="hero-card card-3">
+                            <div class="card-icon">🚀</div>
+                            <h3>Accelerated Growth</h3>
+                            <p>Scale your business with expert guidance</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Why Choose FundFound?</h2>
+                    <p class="section-subtitle">
+                        We provide a comprehensive platform that caters to all stakeholders in the investment ecosystem
+                    </p>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card entrepreneur-card">
+                        <div class="feature-icon">
+                            <i data-lucide="lightbulb" class="icon-large"></i>
+                        </div>
+                        <h3 class="feature-title">For Entrepreneurs</h3>
+                        <p class="feature-description">
+                            Share your innovative business ideas with a network of potential investors
+                            and secure the funding you need to bring your vision to life.
+                        </p>
+                        <ul class="feature-list">
+                            <li><i data-lucide="check"></i> Post detailed business plans</li>
+                            <li><i data-lucide="check"></i> Connect with investors</li>
+                            <li><i data-lucide="check"></i> Track funding progress</li>
+                            <li><i data-lucide="check"></i> Get expert advisory</li>
+                        </ul>
+                        <button class="btn btn-outline" onclick="showAuthModal('register', 'business')">
+                            Join as Entrepreneur
+                        </button>
+                    </div>
+
+                    <div class="feature-card investor-card">
+                        <div class="feature-icon">
+                            <i data-lucide="trending-up" class="icon-large"></i>
+                        </div>
+                        <h3 class="feature-title">For Investors</h3>
+                        <p class="feature-description">
+                            Discover promising startups and investment opportunities with detailed
+                            business plans, financial projections, and direct entrepreneur access.
+                        </p>
+                        <ul class="feature-list">
+                            <li><i data-lucide="check"></i> Browse curated opportunities</li>
+                            <li><i data-lucide="check"></i> Analyze business potential</li>
+                            <li><i data-lucide="check"></i> Manage investment portfolio</li>
+                            <li><i data-lucide="check"></i> Direct communication</li>
+                        </ul>
+                        <button class="btn btn-outline" onclick="showAuthModal('register', 'investor')">
+                            Join as Investor
+                        </button>
+                    </div>
+
+                    <div class="feature-card banking-card">
+                        <div class="feature-icon">
+                            <i data-lucide="building-2" class="icon-large"></i>
+                        </div>
+                        <h3 class="feature-title">Banking Services</h3>
+                        <p class="feature-description">
+                            Connect with banking partners for loans, credit facilities, and
+                            financial services specifically tailored for startups and growing businesses.
+                        </p>
+                        <ul class="feature-list">
+                            <li><i data-lucide="check"></i> Startup-friendly loans</li>
+                            <li><i data-lucide="check"></i> Credit assessment</li>
+                            <li><i data-lucide="check"></i> Financial planning</li>
+                            <li><i data-lucide="check"></i> Quick approvals</li>
+                        </ul>
+                        <button class="btn btn-outline" onclick="showAuthModal('register', 'banker')">
+                            Partner with Us
+                        </button>
+                    </div>
+
+                    <div class="feature-card advisory-card">
+                        <div class="feature-icon">
+                            <i data-lucide="users" class="icon-large"></i>
+                        </div>
+                        <h3 class="feature-title">Expert Advisory</h3>
+                        <p class="feature-description">
+                            Get guidance from experienced business advisors, industry experts,
+                            and successful entrepreneurs to refine your strategy and avoid common pitfalls.
+                        </p>
+                        <ul class="feature-list">
+                            <li><i data-lucide="check"></i> Strategic consulting</li>
+                            <li><i data-lucide="check"></i> Market analysis</li>
+                            <li><i data-lucide="check"></i> Business plan review</li>
+                            <li><i data-lucide="check"></i> Mentorship programs</li>
+                        </ul>
+                        <button class="btn btn-outline" onclick="showAuthModal('register', 'advisor')">
+                            Become Advisor
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="section how-it-works-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">How FundFound Works</h2>
+                    <p class="section-subtitle">
+                        Simple steps to connect, collaborate, and create success stories
+                    </p>
+                </div>
+
+                <div class="process-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <span class="step-number">1</span>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Sign Up & Create Profile</h3>
+                            <p>Register as an entrepreneur, investor, banker, or advisor. Complete your profile with relevant information.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <span class="step-number">2</span>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Post or Browse Opportunities</h3>
+                            <p>Entrepreneurs post business ideas, investors browse opportunities, and service providers offer their expertise.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <span class="step-number">3</span>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Connect & Communicate</h3>
+                            <p>Use our secure messaging system to discuss terms, share documents, and negotiate deals.</p>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <span class="step-number">4</span>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Close Deals & Grow</h3>
+                            <p>Finalize investments, secure funding, and leverage our network for continued growth and success.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Browse Section -->
+        <section id="browse" class="section browse-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Explore Business Opportunities</h2>
+                    <p class="section-subtitle">
+                        Discover innovative business ideas across various industries
+                    </p>
+                </div>
+
+                <div class="browse-controls">
+                    <div class="search-container">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input type="text" placeholder="Search business ideas..." class="search-input" id="searchInput">
+                    </div>
+                    <div class="filter-container">
+                        <select class="filter-select" id="categoryFilter">
+                            <option value="">All Categories</option>
+                            <option value="technology">Technology</option>
+                            <option value="healthcare">Healthcare</option>
+                            <option value="finance">Finance</option>
+                            <option value="education">Education</option>
+                            <option value="ecommerce">E-commerce</option>
+                            <option value="manufacturing">Manufacturing</option>
+                        </select>
+                        <select class="filter-select" id="fundingFilter">
+                            <option value="">All Funding</option>
+                            <option value="0-100000">₹0 - ₹1L</option>
+                            <option value="100000-1000000">₹1L - ₹10L</option>
+                            <option value="1000000-10000000">₹10L - ₹1Cr</option>
+                            <option value="10000000+">₹1Cr+</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="business-grid" id="businessGrid">
+                    <!-- Business ideas will be populated here by JavaScript -->
+                </div>
+
+                <div class="load-more-container">
+                    <button class="btn btn-outline" id="loadMoreBtn">
+                        Load More Ideas
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section about-section">
+            <div class="container">
+                <div class="about-content">
+                    <div class="about-text">
+                        <h2 class="section-title">About FundFound</h2>
+                        <p class="about-description">
+                            FundFound was founded with a simple yet powerful mission: to democratize access
+                            to capital and create meaningful connections between entrepreneurs and investors.
+                            We believe that great ideas deserve great opportunities, and our platform serves
+                            as the bridge that makes these connections possible.
+                        </p>
+                        <div class="about-stats">
+                            <div class="about-stat">
+                                <span class="stat-number">500+</span>
+                                <span class="stat-label">Registered Users</span>
+                            </div>
+                            <div class="about-stat">
+                                <span class="stat-number">₹100Cr+</span>
+                                <span class="stat-label">Total Investments</span>
+                            </div>
+                            <div class="about-stat">
+                                <span class="stat-number">95%</span>
+                                <span class="stat-label">Success Rate</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="about-visual">
+                        <div class="about-image">
+                            <!-- Add image or illustration here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section contact-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Get In Touch</h2>
+                    <p class="section-subtitle">
+                        Have questions? We're here to help you get started
+                    </p>
+                </div>
+
+                <div class="contact-content">
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i data-lucide="mail" class="contact-icon"></i>
+                            <h3>Email Us</h3>
+                            <p>support@fundfound.com</p>
+                        </div>
+                        <div class="contact-item">
+                            <i data-lucide="phone" class="contact-icon"></i>
+                            <h3>Call Us</h3>
+                            <p>+91 98765 43210</p>
+                        </div>
+                        <div class="contact-item">
+                            <i data-lucide="map-pin" class="contact-icon"></i>
+                            <h3>Visit Us</h3>
+                            <p>Mumbai, Maharashtra, India</p>
+                        </div>
+                    </div>
+
+                    <form class="contact-form" id="contactForm">
+                        <div class="form-group">
+                            <label for="contactName">Name</label>
+                            <input type="text" id="contactName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">Email</label>
+                            <input type="email" id="contactEmail" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactSubject">Subject</label>
+                            <input type="text" id="contactSubject" name="subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactMessage">Message</label>
+                            <textarea id="contactMessage" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i data-lucide="send"></i>
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Section (Hidden by default) -->
+        <section id="dashboard" class="section dashboard-section">
+            <div class="container">
+                <!-- Dashboard content will be populated by JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <img src="assets/images/logo.svg" alt="InvestBridge Logo" class="footer-logo">
+                        <span class="brand-text">FundFound</span>
+                    </div>
+                    <p class="footer-description">
+                        Connecting innovative entrepreneurs with smart investors
+                        to build the future of business together.
+                    </p>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">Platform</h3>
+                    <ul class="footer-links">
+                        <li><a href="#browse">Browse Ideas</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#success-stories">Success Stories</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#help">Help Center</a></li>
+                        <li><a href="#contact">Contact Us</a></li>
+                        <li><a href="#terms">Terms of Service</a></li>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">Connect</h3>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            <i data-lucide="twitter"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i data-lucide="linkedin"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i data-lucide="instagram"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i data-lucide="facebook"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 FundFound. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeAuthModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAuthModal()">
+                <i data-lucide="x"></i>
+            </button>
+
+            <div class="auth-container">
+                <!-- Login Form -->
+                <div id="loginForm" class="auth-form active">
+                    <h2 class="auth-title">Welcome Back</h2>
+                    <p class="auth-subtitle">Sign in to your FundFound account</p>
+
+                    <form id="loginFormElement">
+                        <div class="form-group">
+                            <label for="loginEmail">Email Address</label>
+                            <input type="email" id="loginEmail" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input type="password" id="loginPassword" name="password" required>
+                        </div>
+                        <div class="form-options">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="rememberMe">
+                                <span class="checkmark"></span>
+                                Remember me
+                            </label>
+                            <a href="#" class="forgot-password">Forgot password?</a>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">
+                            <i data-lucide="log-in"></i>
+                            Sign In
+                        </button>
+                    </form>
+
+                    <div class="auth-divider">
+                        <span>or</span>
+                    </div>
+
+                    <div class="social-auth">
+                        <button class="btn btn-social google-auth">
+                            <svg class="social-icon" viewBox="0 0 24 24">
+                                <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            Continue with Google
+                        </button>
+                    </div>
+
+                    <p class="auth-switch">
+                        Don't have an account?
+                        <a href="#" onclick="switchAuthForm('register')">Sign up</a>
+                    </p>
+                </div>
+
+                <!-- Register Form -->
+                <div id="registerForm" class="auth-form">
+                    <h2 class="auth-title">Join FundFound</h2>
+                    <p class="auth-subtitle">Create your account and start your journey</p>
+
+                    <!-- User Type Selection -->
+                    <div class="user-type-selector">
+                        <label class="user-type-option">
+                            <input type="radio" name="userType" value="business" checked>
+                            <div class="option-content">
+                                <i data-lucide="lightbulb" class="option-icon"></i>
+                                <span>Entrepreneur</span>
+                            </div>
+                        </label>
+                        <label class="user-type-option">
+                            <input type="radio" name="userType" value="investor">
+                            <div class="option-content">
+                                <i data-lucide="trending-up" class="option-icon"></i>
+                                <span>Investor</span>
+                            </div>
+                        </label>
+                        <label class="user-type-option">
+                            <input type="radio" name="userType" value="banker">
+                            <div class="option-content">
+                                <i data-lucide="building-2" class="option-icon"></i>
+                                <span>Banker</span>
+                            </div>
+                        </label>
+                        <label class="user-type-option">
+                            <input type="radio" name="userType" value="advisor">
+                            <div class="option-content">
+                                <i data-lucide="users" class="option-icon"></i>
+                                <span>Advisor</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <form id="registerFormElement">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" name="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerEmail">Email Address</label>
+                            <input type="email" id="registerEmail" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="company">Company/Organization</label>
+                            <input type="text" id="company" name="company" placeholder="Optional">
+                        </div>
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" name="location" placeholder="City, State" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="registerPassword">Password</label>
+                                <input type="password" id="registerPassword" name="password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword">Confirm Password</label>
+                                <input type="password" id="confirmPassword" name="confirmPassword" required>
+                            </div>
+                        </div>
+
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="agreeTerms" required>
+                            <span class="checkmark"></span>
+                            I agree to the <a href="#terms">Terms of Service</a> and <a href="#privacy">Privacy Policy</a>
+                        </label>
+
+                        <button type="submit" class="btn btn-primary btn-full">
+                            <i data-lucide="user-plus"></i>
+                            Create Account
+                        </button>
+                    </form>
+
+                    <div class="auth-divider">
+                        <span>or</span>
+                    </div>
+
+                    <div class="social-auth">
+                        <button class="btn btn-social google-auth">
+                            <svg class="social-icon" viewBox="0 0 24 24">
+                                <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            Continue with Google
+                        </button>
+                    </div>
+
+                    <p class="auth-switch">
+                        Already have an account?
+                        <a href="#" onclick="switchAuthForm('login')">Sign in</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden">
+        <div class="toast-content">
+            <i data-lucide="check-circle" class="toast-icon"></i>
+            <span class="toast-message">Success message</span>
+        </div>
+        <button class="toast-close" onclick="hideToast()">
+            <i data-lucide="x"></i>
+        </button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+
+    <!-- JavaScript Files -->
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/business.js"></script>
+    <script src="assets/js/investor.js"></script>
+    <script src="assets/js/banker.js"></script>
+    <script src="assets/js/advisor.js"></script>
+    <script src="assets/js/app.js"></script>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Initialize app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading spinner
+            setTimeout(() => {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }, 1000);
+
+            // Initialize the application
+            if (typeof App !== 'undefined') {
+                App.init();
+            }
+        });
+    </script>
+</body>
+</html>

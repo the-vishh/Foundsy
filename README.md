@@ -1,1 +1,1 @@
-# FundFound
+# Foundsy

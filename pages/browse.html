@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse innovative business ideas and investment opportunities on Fundsy">
+    <title>Browse Ideas - Fundsy</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/auth.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Loading opportunities...</p>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="header" id="mainHeader">
+        <nav class="navbar container">
+            <div class="nav-brand">
+                <img src="../assets/images/logo.svg" alt="Fundsy Logo" class="logo-img">
+                <span class="brand-text">Fundsy</span>
+            </div>
+
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item">
+                    <a href="../index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="browse.html" class="nav-link active">Browse Ideas</a>
+                </li>
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link" id="dashboardLink">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a href="profile.html" class="nav-link" id="profileLink">Profile</a>
+                </li>
+            </ul>
+
+            <!-- Authentication Buttons (shown when not logged in) -->
+            <div class="auth-buttons" id="authButtons">
+                <button class="btn btn-outline" onclick="window.location.href='../index.html#auth=login'">
+                    <i data-lucide="log-in"></i>
+                    Login
+                </button>
+                <button class="btn btn-primary" onclick="window.location.href='../index.html#auth=register'">
+                    <i data-lucide="user-plus"></i>
+                    Get Started
+                </button>
+            </div>
+
+            <!-- User Menu (shown when logged in) -->
+            <div class="user-menu hidden" id="userMenu">
+                <div class="user-avatar" id="userAvatar" onclick="toggleUserDropdown()">
+                    <img src="" alt="User Avatar" class="avatar-img hidden" id="avatarImg">
+                    <span class="avatar-text" id="avatarText">U</span>
+                </div>
+                <div class="dropdown-menu hidden" id="userDropdown">
+                    <div class="dropdown-header">
+                        <span class="user-name" id="userName">User Name</span>
+                        <span class="user-type" id="userType">User Type</span>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="dashboard.html" class="dropdown-item">
+                        <i data-lucide="layout-dashboard"></i>
+                        Dashboard
+                    </a>
+                    <a href="profile.html" class="dropdown-item">
+                        <i data-lucide="user"></i>
+                        Profile
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item logout-btn" onclick="logout()">
+                        <i data-lucide="log-out"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <i data-lucide="menu"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Browse Header -->
+        <section class="browse-header">
+            <div class="container">
+                <div class="browse-hero">
+                    <h1 class="browse-title">Discover Investment Opportunities</h1>
+                    <p class="browse-subtitle">
+                        Explore innovative business ideas from entrepreneurs looking for funding.
+                        Find your next investment opportunity today.
+                    </p>
+
+                    <!-- Browse Stats -->
+                    <div class="browse-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="totalIdeasCount">0</span>
+                            <span class="stat-label">Active Ideas</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="categoriesCount">6</span>
+                            <span class="stat-label">Categories</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="fundingTotal">₹0</span>
+                            <span class="stat-label">Total Funding Needed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Browse Filters -->
+        <section class="browse-filters">
+            <div class="container">
+                <div class="filters-container">
+                    <!-- Search Bar -->
+                    <div class="search-container">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <input type="text" placeholder="Search business ideas, categories, or keywords..."
+                               class="search-input" id="searchInput">
+                    </div>
+
+                    <!-- Filter Controls -->
+                    <div class="filter-controls">
+                        <div class="filter-group">
+                            <label for="categoryFilter">Category</label>
+                            <select class="filter-select" id="categoryFilter">
+                                <option value="">All Categories</option>
+                                <option value="technology">Technology</option>
+                                <option value="healthcare">Healthcare</option>
+                                <option value="finance">Finance</option>
+                                <option value="education">Education</option>
+                                <option value="ecommerce">E-commerce</option>
+                                <option value="manufacturing">Manufacturing</option>
+                                <option value="renewable-energy">Renewable Energy</option>
+                                <option value="food-beverage">Food & Beverage</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="fundingFilter">Funding Range</label>
+                            <select class="filter-select" id="fundingFilter">
+                                <option value="">Any Amount</option>
+                                <option value="0-100000">₹0 - ₹1L</option>
+                                <option value="100000-1000000">₹1L - ₹10L</option>
+                                <option value="1000000-10000000">₹10L - ₹1Cr</option>
+                                <option value="10000000-50000000">₹1Cr - ₹5Cr</option>
+                                <option value="50000000+">₹5Cr+</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="locationFilter">Location</label>
+                            <select class="filter-select" id="locationFilter">
+                                <option value="">Any Location</option>
+                                <option value="mumbai">Mumbai</option>
+                                <option value="delhi">Delhi</option>
+                                <option value="bangalore">Bangalore</option>
+                                <option value="hyderabad">Hyderabad</option>
+                                <option value="pune">Pune</option>
+                                <option value="chennai">Chennai</option>
+                                <option value="kolkata">Kolkata</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label for="sortFilter">Sort By</label>
+                            <select class="filter-select" id="sortFilter">
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="funding-high">Highest Funding</option>
+                                <option value="funding-low">Lowest Funding</option>
+                                <option value="popular">Most Popular</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-outline btn-small" onclick="clearAllFilters()">
+                            <i data-lucide="x"></i>
+                            Clear Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Browse Results -->
+        <section class="browse-results">
+            <div class="container">
+                <!-- Results Header -->
+                <div class="results-header">
+                    <div class="results-count">
+                        <h3>Showing <span id="showingCount">0</span> of <span id="totalCount">0</span> business ideas</h3>
+                    </div>

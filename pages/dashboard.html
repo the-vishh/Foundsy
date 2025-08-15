@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fundsy Dashboard - Manage your investment activities">
+    <title>Dashboard - Fundsy</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/auth.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/dashboard-extra.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Loading Dashboard...</p>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="header" id="mainHeader">
+        <nav class="navbar container">
+            <div class="nav-brand">
+                <img src="../assets/images/logo.svg" alt="Fundsy Logo" class="logo-img">
+                <span class="brand-text">Fundsy</span>
+            </div>
+
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item">
+                    <a href="../index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="browse.html" class="nav-link">Browse Ideas</a>
+                </li>
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link active">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a href="profile.html" class="nav-link">Profile</a>
+                </li>
+            </ul>
+
+            <!-- User Menu (for authenticated users) -->
+            <div class="user-menu" id="userMenu">
+                <div class="user-avatar" id="userAvatar" onclick="toggleUserDropdown()">
+                    <img src="" alt="User Avatar" class="avatar-img hidden" id="avatarImg">
+                    <span class="avatar-text" id="avatarText">U</span>
+                </div>
+                <div class="dropdown-menu hidden" id="userDropdown">
+                    <div class="dropdown-header">
+                        <span class="user-name" id="userName">User Name</span>
+                        <span class="user-type" id="userType">User Type</span>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="dashboard.html" class="dropdown-item">
+                        <i data-lucide="layout-dashboard"></i>
+                        Dashboard
+                    </a>
+                    <a href="profile.html" class="dropdown-item">
+                        <i data-lucide="user"></i>
+                        Profile
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item logout-btn" onclick="logout()">
+                        <i data-lucide="log-out"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <i data-lucide="menu"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Dashboard Content -->
+    <main class="main-content">
+        <div class="dashboard-section">
+            <div class="dashboard-container">
+                <!-- Sidebar Navigation -->
+                <aside class="dashboard-sidebar">
+                    <div class="sidebar-header">
+                        <div class="sidebar-avatar" id="sidebarAvatar">
+                            <span id="sidebarAvatarText">U</span>
+                        </div>
+                        <div class="sidebar-user-info">
+                            <h3 id="sidebarUserName">User Name</h3>
+                            <span class="sidebar-user-type" id="sidebarUserType">User Type</span>
+                        </div>
+                    </div>
+
+                    <nav class="sidebar-nav">
+                        <ul class="sidebar-nav">
+                            <li class="sidebar-nav-item">
+                                <a href="#overview" class="sidebar-nav-link active" data-tab="overview">
+                                    <i data-lucide="home" class="sidebar-nav-icon"></i>
+                                    Overview
+                                </a>
+                            </li>
+                            <li class="sidebar-nav-item" id="businessIdeasNav">
+                                <a href="#business-ideas" class="sidebar-nav-link" data-tab="business-ideas">
+                                    <i data-lucide="lightbulb" class="sidebar-nav-icon"></i>
+                                    My Ideas
+                                    <span class="nav-badge" id="ideasBadge">0</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-nav-item" id="investmentsNav">
+                                <a href="#investments" class="sidebar-nav-link" data-tab="investments">
+                                    <i data-lucide="trending-up" class="sidebar-nav-icon"></i>
+                                    Investments
+                                    <span class="nav-badge info" id="investmentsBadge">0</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-nav-item" id="proposalsNav">
+                                <a href="#proposals" class="sidebar-nav-link" data-tab="proposals">
+                                    <i data-lucide="file-text" class="sidebar-nav-icon"></i>
+                                    Proposals
+                                    <span class="nav-badge warning" id="proposalsBadge">0</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-nav-item" id="messagesNav">
+                                <a href="#messages" class="sidebar-nav-link" data-tab="messages">
+                                    <i data-lucide="message-square" class="sidebar-nav-icon"></i>
+                                    Messages
+                                    <span class="nav-badge" id="messagesBadge">0</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-nav-item">
+                                <a href="#analytics" class="sidebar-nav-link" data-tab="analytics">
+                                    <i data-lucide="bar-chart-3" class="sidebar-nav-icon"></i>
+                                    Analytics
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </aside>
+
+                <!-- Main Dashboard Content -->
+                <main class="dashboard-main">
+                    <div class="dashboard-header">
+                        <h1 class="dashboard-title">
+                            <i data-lucide="layout-dashboard"></i>
+                            Dashboard
+                        </h1>
+                        <p class="dashboard-subtitle">Welcome back! Here's what's happening with your account.</p>
+
+                        <div class="dashboard-actions">
+                            <button class="btn btn-primary" id="primaryActionBtn">
+                                <i data-lucide="plus"></i>
+                                <span id="primaryActionText">Add New</span>
+                            </button>
+                            <button class="btn btn-outline" onclick="refreshDashboard()">
+                                <i data-lucide="refresh-cw"></i>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-content">
+                        <!-- Overview Tab -->
+                        <div id="overview-tab" class="dashboard-tab active">
+                            <div class="dashboard-grid" id="dashboardStats">
+                                <!-- Stats cards will be populated by JavaScript -->
+                            </div>
+
+                            <!-- Quick Actions -->
+                            <div class="quick-actions" id="quickActions">
+                                <!-- Quick action buttons will be populated by JavaScript -->
+                            </div>
+
+                            <!-- Recent Activity -->
+                            <div class="activity-feed">
+                                <div class="activity-header">
+                                    <h3>Recent Activity</h3>
+                                    <button class="btn btn-outline btn-small">View All</button>
+                                </div>
+                                <ul class="activity-list" id="recentActivity">
+                                    <!-- Activity items will be populated by JavaScript -->
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Business Ideas Tab (for entrepreneurs) -->
+                        <div id="business-ideas-tab" class="dashboard-tab">
+                            <div class="dashboard-table-container">
+                                <div class="table-header">
+                                    <h3 class="table-title">My Business Ideas</h3>
+                                    <div class="table-actions">
+                                        <button class="btn btn-primary" id="addBusinessIdeaBtn">
+                                            <i data-lucide="plus"></i>
+                                            Post New Idea
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="businessIdeasContainer">
+                                    <!-- Business ideas table will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Investments Tab (for investors) -->
+                        <div id="investments-tab" class="dashboard-tab">
+                            <div class="dashboard-table-container">
+                                <div class="table-header">
+                                    <h3 class="table-title">My Investments</h3>
+                                    <div class="table-actions">
+                                        <button class="btn btn-outline">Export Report</button>
+                                    </div>
+                                </div>
+                                <div id="investmentsContainer">
+                                    <!-- Investments table will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Proposals Tab -->
+                        <div id="proposals-tab" class="dashboard-tab">
+                            <div class="dashboard-table-container">
+                                <div class="table-header">
+                                    <h3 class="table-title">Proposals</h3>
+                                    <div class="table-actions">
+                                        <select class="filter-select">
+                                            <option value="">All Status</option>
+                                            <option value="pending">Pending</option>
+                                            <option value="accepted">Accepted</option>
+                                            <option value="rejected">Rejected</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="proposalsContainer">
+                                    <!-- Proposals table will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Messages Tab -->
+                        <div id="messages-tab" class="dashboard-tab">
+                            <div class="dashboard-table-container">
+                                <div class="table-header">
+                                    <h3 class="table-title">Messages</h3>
+                                    <div class="table-actions">
+                                        <button class="btn btn-primary">
+                                            <i data-lucide="plus"></i>
+                                            New Message
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="messagesContainer">
+                                    <!-- Messages will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Analytics Tab -->
+                        <div id="analytics-tab" class="dashboard-tab">
+                            <div class="chart-container">
+                                <div class="chart-header">
+                                    <h3 class="chart-title">Performance Overview</h3>
+                                    <div class="chart-filters">
+                                        <button class="chart-filter-btn active">7 Days</button>
+                                        <button class="chart-filter-btn">30 Days</button>
+                                        <button class="chart-filter-btn">90 Days</button>
+                                    </div>
+                                </div>
+                                <div class="chart-wrapper" id="performanceChart">
+                                    <p>Chart will be implemented here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </main>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden">
+        <div class="toast-content">
+            <i data-lucide="check-circle" class="toast-icon"></i>
+            <span class="toast-message">Success message</span>
+        </div>
+        <button class="toast-close" onclick="hideToast()">
+            <i data-lucide="x"></i>
+        </button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+
+    <!-- JavaScript Files -->
+    <script src="../assets/js/firebase-config.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/business.js"></script>
+    <script src="../assets/js/investor.js"></script>
+    <script src="../assets/js/dashboard.js"></script>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Dashboard-specific initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading spinner
+            setTimeout(() => {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }, 1000);
+
+            // Initialize dashboard
+            if (typeof DashboardManager !== 'undefined') {
+                DashboardManager.init();
+            } else {
+                // Fallback to existing dashboard functionality
+                initializeDashboard();
+            }
+        });
+
+        // Dashboard initialization function
+        function initializeDashboard() {
+            // Check authentication
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    loadUserDashboard(user);
+                } else {
+                    // Redirect to home page if not authenticated
+                    window.location.href = '../index.html';
+                }
+            });
+
+            // Initialize tab navigation
+            initializeTabNavigation();
+        }
+
+        // Load user-specific dashboard content
+        async function loadUserDashboard(user) {
+            try {
+                const userProfile = await FirebaseService.getUserProfile(user.uid);
+                if (userProfile.success) {
+                    updateUserDisplay(userProfile.data);
+                    loadDashboardContent(userProfile.data);
+                }
+            } catch (error) {
+                console.error('Error loading user dashboard:', error);
+            }
+        }
+
+        // Update user display
+        function updateUserDisplay(userData) {
+            const userName = `${userData.profile.firstName} ${userData.profile.lastName}`;
+            const userType = userData.userType;
+
+            // Update header
+            document.getElementById('userName').textContent = userName;
+            document.getElementById('userType').textContent = formatUserType(userType);
+            document.getElementById('avatarText').textContent =
+                `${userData.profile.firstName[0]}${userData.profile.lastName[0]}`.toUpperCase();
+
+            // Update sidebar
+            document.getElementById('sidebarUserName').textContent = userName;
+            document.getElementById('sidebarUserType').textContent = formatUserType(userType);
+            document.getElementById('sidebarAvatarText').textContent =
+                `${userData.profile.firstName[0]}${userData.profile.lastName[0]}`.toUpperCase();
+
+            // Update dashboard title and actions based on user type
+            updateDashboardForUserType(userType);
+        }
+
+        // Update dashboard based on user type
+        function updateDashboardForUserType(userType) {
+            const primaryActionBtn = document.getElementById('primaryActionBtn');
+            const primaryActionText = document.getElementById('primaryActionText');
+
+            switch(userType) {
+                case 'business':
+                    primaryActionText.textContent = 'Post New Idea';
+                    primaryActionBtn.onclick = () => showAddBusinessIdeaModal();
+                    break;
+                case 'investor':
+                    primaryActionText.textContent = 'Browse Ideas';
+                    primaryActionBtn.onclick = () => window.location.href = 'browse.html';
+                    break;
+                case 'banker':
+                    primaryActionText.textContent = 'New Application';
+                    primaryActionBtn.onclick = () => showNewLoanModal();
+                    break;
+                case 'advisor':
+                    primaryActionText.textContent = 'Schedule Session';
+                    primaryActionBtn.onclick = () => showScheduleModal();
+                    break;
+            }
+
+            // Show/hide navigation items based on user type
+            const businessIdeasNav = document.getElementById('businessIdeasNav');
+            const investmentsNav = document.getElementById('investmentsNav');
+
+            if (userType === 'business') {
+                businessIdeasNav.style.display = 'block';
+                investmentsNav.style.display = 'none';
+            } else if (userType === 'investor') {
+                businessIdeasNav.style.display = 'none';
+                investmentsNav.style.display = 'block';
+            }
+        }
+
+        // Initialize tab navigation
+        function initializeTabNavigation() {
+            const tabLinks = document.querySelectorAll('.sidebar-nav-link');
+            const tabContents = document.querySelectorAll('.dashboard-tab');
+
+            tabLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tabId = link.dataset.tab;
+
+                    // Remove active class from all links and tabs
+                    tabLinks.forEach(l => l.classList.remove('active'));
+                    tabContents.forEach(t => t.classList.remove('active'));
+
+                    // Add active class to clicked link and corresponding tab
+                    link.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+        }
+
+        // Load dashboard content based on user type
+        function loadDashboardContent(userData) {
+            // This would integrate with your existing dashboard.js functionality
+            if (typeof createDashboardContent !== 'undefined') {
+                // Store user data for dashboard functions
+                sessionStorage.setItem('currentUser', JSON.stringify(userData));
+                createDashboardContent();
+            }
+        }
+
+        // Utility functions
+        function formatUserType(userType) {
+            const types = {
+                business: "Entrepreneur",
+                investor: "Investor",
+                banker: "Banking Partner",
+                advisor: "Business Advisor"
+            };
+            return types[userType] || userType;
+        }
+
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function logout() {
+            FirebaseService.signOut().then(() => {
+                window.location.href = '../index.html';
+            });
+        }
+
+        function refreshDashboard() {
+            window.location.reload();
+        }
+
+        function hideToast() {
+            document.getElementById('toast').classList.add('hidden');
+        }
+
+        // Placeholder functions for modals (to be implemented)
+        function showAddBusinessIdeaModal() {
+            alert('Add Business Idea modal will be implemented');
+        }
+
+        function showNewLoanModal() {
+            alert('New Loan Application modal will be implemented');
+        }
+
+        function showScheduleModal() {
+            alert('Schedule Session modal will be implemented');
+        }
+    </script>
+</body>
+</html>

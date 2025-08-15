@@ -1,5 +1,4 @@
 // Enhanced Authentication Handling
-// Add this to your existing auth.js or create a new file
 
 // Override the existing Auth.handleLogin and Auth.handleRegister functions
 if (typeof Auth !== "undefined") {

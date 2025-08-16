@@ -32,36 +32,43 @@ if (typeof Auth !== "undefined") {
     submitBtn.disabled = true;
 
     try {
-      // Simulate login process
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Use real Firebase authentication
+      if (typeof FirebaseService !== "undefined") {
+        const result = await FirebaseService.signIn(email, password);
+        
+        if (result.success) {
+          console.log("Firebase login successful:", result.user);
+          
+          // Show success message
+          this.showSuccessMessage(
+            "Welcome back! You have been signed in successfully."
+          );
 
-      // Mock successful login
-      console.log("Mock login successful");
+          // Close modal
+          this.closeModal();
 
-      // Create mock user session
-      const mockUser = {
-        uid: "user-" + Date.now(),
-        email: email,
-        displayName: email.split("@")[0],
-        userType: "business", // Default type
-      };
-
-      // Store in sessionStorage for demo
-      sessionStorage.setItem("currentUser", JSON.stringify(mockUser));
-
-      // Show success message
-      this.showSuccessMessage(
-        "Welcome back! You have been signed in successfully."
-      );
-
-      // Close modal
-      this.closeModal();
-
-      // Update UI for logged in user
-      this.updateUIForLoggedInUser(mockUser);
+          // Update UI for logged in user
+          this.updateUIForLoggedInUser(result.user);
+        } else {
+          throw new Error(result.error);
+        }
+      } else {
+        throw new Error("Firebase service not available");
+      }
     } catch (error) {
       console.error("Login error:", error);
-      alert("Login failed. Please try again.");
+      
+      // Show user-friendly error message
+      let errorMessage = "Login failed. Please try again.";
+      if (error.message.includes("INVALID_LOGIN_CREDENTIALS")) {
+        errorMessage = "Invalid email or password. Please check your credentials.";
+      } else if (error.message.includes("USER_NOT_FOUND")) {
+        errorMessage = "No account found with this email. Please sign up first.";
+      } else if (error.message.includes("TOO_MANY_ATTEMPTS")) {
+        errorMessage = "Too many failed attempts. Please try again later.";
+      }
+      
+      alert(errorMessage);
     } finally {
       // Restore button
       submitBtn.innerHTML = originalText;
@@ -98,12 +105,7 @@ if (typeof Auth !== "undefined") {
     });
 
     // Basic validation
-    if (
-      !userData.firstName ||
-      !userData.lastName ||
-      !userData.email ||
-      !userData.password
-    ) {
+    if (!userData.firstName || !userData.lastName || !userData.email || !userData.password) {
       alert("Please fill in all required fields");
       return;
     }
@@ -114,7 +116,7 @@ if (typeof Auth !== "undefined") {
     }
 
     if (!userData.agreeTerms) {
-      alert("You must agree to the Terms of Service");
+      alert("Please agree to the terms and conditions");
       return;
     }
 
@@ -124,43 +126,43 @@ if (typeof Auth !== "undefined") {
     submitBtn.disabled = true;
 
     try {
-      // Simulate registration process
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Use real Firebase authentication
+      if (typeof FirebaseService !== "undefined") {
+        const result = await FirebaseService.signUp(userData.email, userData.password, userData);
+        
+        if (result.success) {
+          console.log("Firebase registration successful:", result.user);
+          
+          // Show success message
+          this.showSuccessMessage(
+            "Account created successfully! Please check your email for verification."
+          );
 
-      // Mock successful registration
-      console.log("Mock registration successful");
+          // Close modal
+          this.closeModal();
 
-      // Create mock user session
-      const mockUser = {
-        uid: "user-" + Date.now(),
-        email: userData.email,
-        displayName: userData.firstName + " " + userData.lastName,
-        userType: userData.userType,
-        profile: {
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          phone: userData.phone,
-          company: userData.company,
-          location: userData.location,
-        },
-      };
-
-      // Store in sessionStorage for demo
-      sessionStorage.setItem("currentUser", JSON.stringify(mockUser));
-
-      // Show success message
-      this.showSuccessMessage(
-        "Account created successfully! Welcome to Fundsy!"
-      );
-
-      // Close modal
-      this.closeModal();
-
-      // Update UI for logged in user
-      this.updateUIForLoggedInUser(mockUser);
+          // Update UI for logged in user
+          this.updateUIForLoggedInUser(result.user);
+        } else {
+          throw new Error(result.error);
+        }
+      } else {
+        throw new Error("Firebase service not available");
+      }
     } catch (error) {
       console.error("Registration error:", error);
-      alert("Registration failed. Please try again.");
+      
+      // Show user-friendly error message
+      let errorMessage = "Registration failed. Please try again.";
+      if (error.message.includes("EMAIL_EXISTS")) {
+        errorMessage = "An account with this email already exists. Please sign in instead.";
+      } else if (error.message.includes("WEAK_PASSWORD")) {
+        errorMessage = "Password is too weak. Please use at least 6 characters.";
+      } else if (error.message.includes("INVALID_EMAIL")) {
+        errorMessage = "Please enter a valid email address.";
+      }
+      
+      alert(errorMessage);
     } finally {
       // Restore button
       submitBtn.innerHTML = originalText;
@@ -393,3 +395,30 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
+
+// Add event listeners for the forms when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  // Login form
+  const loginForm = document.getElementById('loginFormElement');
+  if (loginForm) {
+    loginForm.addEventListener('submit', function(e) {
+      if (typeof Auth !== "undefined" && Auth.handleLogin) {
+        Auth.handleLogin(e);
+      } else {
+        console.error('Auth.handleLogin not available');
+      }
+    });
+  }
+
+  // Register form
+  const registerForm = document.getElementById('registerFormElement');
+  if (registerForm) {
+    registerForm.addEventListener('submit', function(e) {
+      if (typeof Auth !== "undefined" && Auth.handleRegister) {
+        Auth.handleRegister(e);
+      } else {
+        console.error('Auth.handleRegister not available');
+      }
+    });
+  }
+});

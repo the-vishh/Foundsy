@@ -1,0 +1,37 @@
+{
+  "name": "foundsy",
+  "version": "1.0.0",
+  "description": "Foundsy - Connecting Investors with Entrepreneurs for mutual growth and success",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8000",
+    "build": "echo 'No build process needed for static site'",
+    "test": "echo 'No tests specified'"
+  },
+  "keywords": [
+    "investment",
+    "startup",
+    "entrepreneur",
+    "funding",
+    "business-ideas",
+    "firebase",
+    "web-app"
+  ],
+  "author": "Foundsy Team",
+  "license": "MIT",
+  "dependencies": {
+    "firebase": "^12.1.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/foundsy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/foundsy/issues"
+  },
+  "homepage": "https://github.com/your-username/foundsy#readme"
+}

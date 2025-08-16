@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Fundsy- Connecting Investors with Entrepreneurs for mutual growth and success">
+    <meta name="description" content="Foundsy- Connecting Investors with Entrepreneurs for mutual growth and success">
     <meta name="keywords" content="investment, startup, entrepreneur, funding, business ideas">
     <meta name="author" content="InvestBridge Team">
 
-    <title>Fundsy- Connecting Investors & Entrepreneurs</title>
+    <title>Foundsy- Connecting Investors & Entrepreneurs</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
@@ -24,21 +24,22 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="assets/css/auth.css">
     <link rel="stylesheet" href="assets/css/dashboard.css">
+    <link rel="stylesheet" href="assets/css/dashboard-extra.css">
     <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="assets/css/responsive-fixes.css">
 </head>
 <body>
     <!-- Loading Spinner -->
     <div id="loadingSpinner" class="loading-spinner">
         <div class="spinner"></div>
-        <p>Loading Fundsy...</p>
+        <p>Loading Foundsy...</p>
     </div>
 
     <!-- Navigation Header -->
     <header class="header" id="mainHeader">
         <nav class="navbar container">
             <div class="nav-brand">
-                <img src="assets/images/logo.svg" alt="InvestBridge Logo" class="logo-img">
-                <span class="brand-text">Fundsy</span>
+                <span class="brand-text">Foundsy</span>
             </div>
 
             <ul class="nav-menu" id="navMenu">
@@ -104,7 +105,7 @@
             </div>
 
             <!-- Mobile Menu Toggle -->
-            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle mobile menu">
                 <i data-lucide="menu"></i>
             </button>
         </nav>
@@ -179,7 +180,7 @@
         <section class="features-section">
             <div class="container">
                 <div class="section-header">
-                    <h2 class="section-title">Why Choose Fundsy?</h2>
+                    <h2 class="section-title">Why Choose Foundsy?</h2>
                     <p class="section-subtitle">
                         We provide a comprehensive platform that caters to all stakeholders in the investment ecosystem
                     </p>
@@ -273,7 +274,7 @@
         <section id="how-it-works" class="section how-it-works-section">
             <div class="container">
                 <div class="section-header">
-                    <h2 class="section-title">How Fundsy Works</h2>
+                    <h2 class="section-title">How Foundsy Works</h2>
                     <p class="section-subtitle">
                         Simple steps to connect, collaborate, and create success stories
                     </p>
@@ -375,9 +376,9 @@
             <div class="container">
                 <div class="about-content">
                     <div class="about-text">
-                        <h2 class="section-title">About Fundsy</h2>
+                        <h2 class="section-title">About Foundsy</h2>
                         <p class="about-description">
-                            Fundsy was founded with a simple yet powerful mission: to democratize access
+                            Foundsy was founded with a simple yet powerful mission: to democratize access
                             to capital and create meaningful connections between entrepreneurs and investors.
                             We believe that great ideas deserve great opportunities, and our platform serves
                             as the bridge that makes these connections possible.
@@ -412,7 +413,7 @@
                 <div class="section-header">
                     <h2 class="section-title">Get In Touch</h2>
                     <p class="section-subtitle">
-                        Have questions? We're here to help you get started
+                        Have questions? We're here to help you get started!
                     </p>
                 </div>
 
@@ -421,7 +422,7 @@
                         <div class="contact-item">
                             <i data-lucide="mail" class="contact-icon"></i>
                             <h3>Email Us</h3>
-                            <p>support@fundfound.com</p>
+                            <p>support@foundsy.com</p>
                         </div>
                         <div class="contact-item">
                             <i data-lucide="phone" class="contact-icon"></i>
@@ -475,8 +476,7 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <div class="footer-brand">
-                        <img src="assets/images/logo.svg" alt="InvestBridge Logo" class="footer-logo">
-                        <span class="brand-text">Fundsy</span>
+                        <span class="brand-text">Foundsy</span>
                     </div>
                     <p class="footer-description">
                         Connecting innovative entrepreneurs with smart investors
@@ -524,7 +524,7 @@
             </div>
 
             <div class="footer-bottom">
-                <p>&copy; 2025 Fundsy. All rights reserved.</p>
+                <p>&copy; 2025 Foundsy. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -541,9 +541,9 @@
                 <!-- Login Form -->
                 <div id="loginForm" class="auth-form active">
                     <h2 class="auth-title">Welcome Back</h2>
-                    <p class="auth-subtitle">Sign in to your Fundsy account</p>
+                    <p class="auth-subtitle">Sign in to your Foundsy account</p>
 
-                    <form id="loginFormElement">
+                    <form id="loginFormElement" onsubmit="handleLogin(event)">
                         <div class="form-group">
                             <label for="loginEmail">Email Address</label>
                             <input type="email" id="loginEmail" name="email" required>
@@ -571,7 +571,7 @@
                     </div>
 
                     <div class="social-auth">
-                        <button class="btn btn-social google-auth">
+                        <button class="btn btn-social google-auth" onclick="handleGoogleSignIn()">
                             <svg class="social-icon" viewBox="0 0 24 24">
                                 <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                                 <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -590,7 +590,7 @@
 
                 <!-- Register Form -->
                 <div id="registerForm" class="auth-form">
-                    <h2 class="auth-title">Join Fundsy</h2>
+                    <h2 class="auth-title">Join Foundsy</h2>
                     <p class="auth-subtitle">Create your account and start your journey</p>
 
                     <!-- User Type Selection -->
@@ -625,7 +625,7 @@
                         </label>
                     </div>
 
-                    <form id="registerFormElement">
+                    <form id="registerFormElement" onsubmit="handleRegister(event)">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="firstName">First Name</label>
@@ -680,7 +680,7 @@
                     </div>
 
                     <div class="social-auth">
-                        <button class="btn btn-social google-auth">
+                        <button class="btn btn-social google-auth" onclick="handleGoogleSignIn()">
                             <svg class="social-icon" viewBox="0 0 24 24">
                                 <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                                 <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -711,25 +711,316 @@
         </button>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <!-- Firebase v8 CDN Scripts - IMPORTANT: Load these BEFORE your custom scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+    
+    <!-- Remove duplicate Firebase v10 scripts - they conflict with v8 -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script> -->
 
     <!-- JavaScript Files -->
     <script src="assets/js/firebase-config.js"></script>
-    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/utlis.js"></script>
     <script src="assets/js/auth.js"></script>
+    <script src="enhanced-auth-handling.js"></script>
     <script src="assets/js/business.js"></script>
     <script src="assets/js/investor.js"></script>
     <script src="assets/js/banker.js"></script>
     <script src="assets/js/advisor.js"></script>
     <script src="assets/js/app.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+    <script src="assets/js/business-posting.js"></script>
 
     <script>
         // Initialize Lucide icons
         lucide.createIcons();
+
+        // Authentication Modal Functions
+        function showAuthModal(type, userType = null) {
+            const modal = document.getElementById('authModal');
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            modal.classList.remove('hidden');
+            
+            if (type === 'login') {
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
+            } else if (type === 'register') {
+                registerForm.classList.add('active');
+                loginForm.classList.remove('active');
+                
+                // Set user type if provided
+                if (userType) {
+                    const radioButton = document.querySelector(`input[name="userType"][value="${userType}"]`);
+                    if (radioButton) {
+                        radioButton.checked = true;
+                    }
+                }
+            }
+        }
+
+        function closeAuthModal() {
+            const modal = document.getElementById('authModal');
+            modal.classList.add('hidden');
+        }
+
+        function switchAuthForm(type) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            
+            if (type === 'login') {
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
+            } else if (type === 'register') {
+                registerForm.classList.add('active');
+                loginForm.classList.remove('active');
+            }
+        }
+
+        // Google Sign-in Handler
+        async function handleGoogleSignIn() {
+            try {
+                console.log('Initiating Google sign-in...');
+                
+                if (typeof FirebaseService !== 'undefined') {
+                    const result = await FirebaseService.signInWithGoogle();
+                    
+                    if (result.success) {
+                        console.log('Google sign-in successful:', result.user);
+                        
+                        // Close modal
+                        closeAuthModal();
+                        
+                        // Show success message
+                        showToast('Successfully signed in with Google!', 'success');
+                        
+                        // Update UI for logged in user
+                        if (typeof Auth !== 'undefined' && Auth.updateUIForLoggedInUser) {
+                            Auth.updateUIForLoggedInUser(result.user);
+                        }
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } else {
+                    throw new Error('Firebase service not available');
+                }
+            } catch (error) {
+                console.error('Google sign-in error:', error);
+                
+                let errorMessage = 'Google sign-in failed. Please try again.';
+                if (error.message.includes('popup-closed-by-user')) {
+                    errorMessage = 'Google sign-in was cancelled.';
+                } else if (error.message.includes('popup-blocked')) {
+                    errorMessage = 'Please allow popups for Google sign-in.';
+                }
+                
+                showToast(errorMessage, 'error');
+            }
+        }
+
+        // Login Handler
+        async function handleLogin(event) {
+            event.preventDefault();
+            console.log('Login form submitted');
+
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const formData = new FormData(form);
+
+            const email = formData.get("email");
+            const password = formData.get("password");
+
+            console.log("Login attempt:", {
+                email,
+                password: password ? "***" : "empty",
+            });
+
+            // Basic validation
+            if (!email || !password) {
+                showToast("Please fill in all fields", "error");
+                return;
+            }
+
+            // Show loading state
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i data-lucide="loader"></i> Signing In...';
+            submitBtn.disabled = true;
+
+            try {
+                // Use real Firebase authentication
+                if (typeof FirebaseService !== "undefined") {
+                    const result = await FirebaseService.signIn(email, password);
+                    
+                    if (result.success) {
+                        console.log("Firebase login successful:", result.user);
+                        
+                        // Show success message
+                        showToast("Welcome back! You have been signed in successfully.", "success");
+
+                        // Close modal
+                        closeAuthModal();
+
+                        // Update UI for logged in user
+                        if (typeof Auth !== "undefined" && Auth.updateUIForLoggedInUser) {
+                            Auth.updateUIForLoggedInUser(result.user);
+                        }
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } else {
+                    throw new Error("Firebase service not available");
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                
+                // Show user-friendly error message
+                let errorMessage = "Login failed. Please try again.";
+                if (error.message.includes("INVALID_LOGIN_CREDENTIALS")) {
+                    errorMessage = "Invalid email or password. Please check your credentials.";
+                } else if (error.message.includes("USER_NOT_FOUND")) {
+                    errorMessage = "No account found with this email. Please sign up first.";
+                } else if (error.message.includes("TOO_MANY_ATTEMPTS")) {
+                    errorMessage = "Too many failed attempts. Please try again later.";
+                }
+                
+                showToast(errorMessage, "error");
+            } finally {
+                // Restore button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Register Handler
+        async function handleRegister(event) {
+            event.preventDefault();
+            console.log('Registration form submitted');
+
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const formData = new FormData(form);
+
+            const userData = {
+                firstName: formData.get("firstName"),
+                lastName: formData.get("lastName"),
+                email: formData.get("email"),
+                phone: formData.get("phone"),
+                company: formData.get("company"),
+                location: formData.get("location"),
+                password: formData.get("password"),
+                confirmPassword: formData.get("confirmPassword"),
+                userType: document.querySelector('input[name="userType"]:checked').value,
+                agreeTerms: formData.get("agreeTerms"),
+            };
+
+            console.log("Registration attempt:", {
+                ...userData,
+                password: "***",
+                confirmPassword: "***",
+            });
+
+            // Basic validation
+            if (!userData.firstName || !userData.lastName || !userData.email || !userData.password) {
+                showToast("Please fill in all required fields", "error");
+                return;
+            }
+
+            if (userData.password !== userData.confirmPassword) {
+                showToast("Passwords do not match", "error");
+                return;
+            }
+
+            if (!userData.agreeTerms) {
+                showToast("Please agree to the terms and conditions", "error");
+                return;
+            }
+
+            // Show loading state
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i data-lucide="loader"></i> Creating Account...';
+            submitBtn.disabled = true;
+
+            try {
+                // Use real Firebase authentication
+                if (typeof FirebaseService !== "undefined") {
+                    const result = await FirebaseService.signUp(userData.email, userData.password, userData);
+                    
+                    if (result.success) {
+                        console.log("Firebase registration successful:", result.user);
+                        
+                        // Show success message
+                        showToast("Account created successfully! Please check your email for verification.", "success");
+
+                        // Close modal
+                        closeAuthModal();
+
+                        // Update UI for logged in user
+                        if (typeof Auth !== "undefined" && Auth.updateUIForLoggedInUser) {
+                            Auth.updateUIForLoggedInUser(result.user);
+                        }
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } else {
+                    throw new Error("Firebase service not available");
+                }
+            } catch (error) {
+                console.error("Registration error:", error);
+                
+                // Show user-friendly error message
+                let errorMessage = "Registration failed. Please try again.";
+                if (error.message.includes("EMAIL_EXISTS")) {
+                    errorMessage = "An account with this email already exists. Please sign in instead.";
+                } else if (error.message.includes("WEAK_PASSWORD")) {
+                    errorMessage = "Password is too weak. Please use at least 6 characters.";
+                } else if (error.message.includes("INVALID_EMAIL")) {
+                    errorMessage = "Please enter a valid email address.";
+                }
+                
+                showToast(errorMessage, "error");
+            } finally {
+                // Restore button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Toast notification functions
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = toast.querySelector('.toast-message');
+            const toastIcon = toast.querySelector('.toast-icon');
+            
+            toastMessage.textContent = message;
+            
+            // Update icon based on type
+            if (type === 'success') {
+                toastIcon.setAttribute('data-lucide', 'check-circle');
+            } else if (type === 'error') {
+                toastIcon.setAttribute('data-lucide', 'x-circle');
+            }
+            
+            // Refresh Lucide icons
+            lucide.createIcons();
+            
+            toast.classList.remove('hidden');
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                hideToast();
+            }, 5000);
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('hidden');
+        }
 
         // Initialize app when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
@@ -744,5 +1035,6 @@
             }
         });
     </script>
+    <script src="debug-test.js"></script>
 </body>
 </html>

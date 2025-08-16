@@ -34,10 +34,12 @@
   --bg-secondary: #f8fafc;
   --bg-tertiary: #f1f5f9;
   --bg-dark: #1e293b;
+  --bg-black: black;
 
   /* Text Colors */
   --text-primary: #0f172a;
   --text-secondary: #334155;
+  --text-thid: rgb(223, 223, 223);
   --text-muted: #64748b;
   --text-light: #94a3b8;
 

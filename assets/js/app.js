@@ -1,5 +1,5 @@
-// Main Application Controller for FundFound Platform
-// Handles navigation, initialization, and core functionality
+// Fixed Main Application Controller for FundFound Platform
+// Handles navigation, initialization, and core functionality with proper mobile responsiveness
 
 const App = {
   // Application state
@@ -12,6 +12,7 @@ const App = {
     loading: false,
     currentPage: 1,
     itemsPerPage: 9,
+    isMobileMenuOpen: false,
   },
 
   // DOM elements cache
@@ -38,8 +39,9 @@ const App = {
     this.bindEvents();
     this.initializeAuth();
     this.initializeNavigation();
-    this.loadBusinessIdeas();
+    // this.loadBusinessIdeas(); // Removed auto-loading to prevent unwanted modals
     this.initializeSearch();
+    this.handleInitialResize();
 
     console.log("Application initialized successfully");
   },
@@ -68,19 +70,22 @@ const App = {
     this.elements.navLinks.forEach((link) => {
       link.addEventListener("click", (e) => {
         e.preventDefault();
-        const section = link.dataset.section;
+        const section =
+          link.dataset.section || link.getAttribute("href").replace("#", "");
         if (section) {
           this.navigateToSection(section);
+          this.closeMobileMenu(); // Close mobile menu after navigation
         }
       });
     });
 
-    // Mobile menu toggle
+    // Mobile menu toggle - FIXED
     if (this.elements.mobileMenuToggle) {
-      this.elements.mobileMenuToggle.addEventListener(
-        "click",
-        this.toggleMobileMenu.bind(this)
-      );
+      this.elements.mobileMenuToggle.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.toggleMobileMenu();
+      });
     }
 
     // Header scroll effect
@@ -122,26 +127,63 @@ const App = {
       );
     }
 
-    // Window resize events
+    // Window resize events - IMPROVED
     window.addEventListener(
       "resize",
-      Utils.debounce(this.handleResize.bind(this), 250)
+      Utils.debounce(this.handleResize.bind(this), 100)
     );
 
-    // Click outside to close dropdowns
+    // Click outside to close dropdowns - IMPROVED
     document.addEventListener("click", this.handleOutsideClick.bind(this));
+
+    // Touch events for mobile interactions
+    this.bindTouchEvents();
+  },
+
+  // NEW: Bind touch events for better mobile experience
+  bindTouchEvents() {
+    // Enable touch scrolling on mobile
+    if ("ontouchstart" in window) {
+      document.body.style.webkitOverflowScrolling = "touch";
+    }
+
+    // Prevent zoom on double tap for form inputs
+    let lastTouchEnd = 0;
+    document.addEventListener(
+      "touchend",
+      function (event) {
+        const now = new Date().getTime();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      },
+      false
+    );
+  },
+
+  // NEW: Handle initial resize to set proper states
+  handleInitialResize() {
+    this.handleResize();
+
+    // Ensure mobile menu is closed on desktop
+    if (window.innerWidth > 991) {
+      this.closeMobileMenu();
+    }
   },
 
   // Initialize authentication state
   initializeAuth() {
     // Listen for authentication state changes
-    FirebaseService.onAuthStateChanged((user) => {
-      if (user) {
-        this.handleUserSignedIn(user);
-      } else {
-        this.handleUserSignedOut();
-      }
-    });
+    if (typeof FirebaseService !== "undefined") {
+      FirebaseService.onAuthStateChanged((user) => {
+        if (user) {
+          this.handleUserSignedIn(user);
+        } else {
+          this.handleUserSignedOut();
+        }
+      });
+    }
   },
 
   // Handle user signed in
@@ -149,23 +191,23 @@ const App = {
     try {
       this.state.isAuthenticated = true;
 
-      // Get user profile data
-      const profileResult = await FirebaseService.getUserProfile(user.uid);
+      // Get user profile data (mock for now since Firebase isn't connected)
+      // const profileResult = await FirebaseService.getUserProfile(user.uid);
 
-      if (profileResult.success) {
-        this.state.currentUser = {
-          uid: user.uid,
-          email: user.email,
-          emailVerified: user.emailVerified,
-          ...profileResult.data,
-        };
+      // Mock user data for testing
+      this.state.currentUser = {
+        uid: user.uid || "test-uid",
+        email: user.email || "test@example.com",
+        emailVerified: user.emailVerified || false,
+        userType: "business",
+        profile: {
+          firstName: "John",
+          lastName: "Doe",
+        },
+      };
 
-        this.updateUIForAuthenticatedUser();
-        this.loadUserSpecificContent();
-      } else {
-        console.error("Failed to load user profile:", profileResult.error);
-        Utils.showError("Failed to load user profile");
-      }
+      this.updateUIForAuthenticatedUser();
+      this.loadUserSpecificContent();
     } catch (error) {
       console.error("Error handling user sign in:", error);
       Utils.showError("Authentication error occurred");
@@ -222,7 +264,7 @@ const App = {
     const avatarText = Utils.getElementById("avatarText");
     const avatarImg = Utils.getElementById("avatarImg");
 
-    if (userName) {
+    if (userName && this.state.currentUser.profile) {
       const fullName = `${this.state.currentUser.profile.firstName} ${this.state.currentUser.profile.lastName}`;
       userName.textContent = fullName;
     }
@@ -233,13 +275,17 @@ const App = {
       );
     }
 
-    if (avatarText) {
+    if (avatarText && this.state.currentUser.profile) {
       const initials = `${this.state.currentUser.profile.firstName[0]}${this.state.currentUser.profile.lastName[0]}`;
       avatarText.textContent = initials.toUpperCase();
     }
 
     // Handle avatar image if available
-    if (this.state.currentUser.profile.avatar && avatarImg) {
+    if (
+      this.state.currentUser.profile &&
+      this.state.currentUser.profile.avatar &&
+      avatarImg
+    ) {
       avatarImg.src = this.state.currentUser.profile.avatar;
       Utils.show(avatarImg);
       Utils.hide(avatarText);
@@ -261,7 +307,7 @@ const App = {
     });
   },
 
-  // Navigate to section
+  // Navigate to section - IMPROVED
   navigateToSection(sectionName, updateHistory = true) {
     // Validate section exists
     const targetSection = Utils.getElementById(sectionName);
@@ -277,7 +323,9 @@ const App = {
       !this.state.isAuthenticated
     ) {
       Utils.showWarning("Please sign in to access this page");
-      showAuthModal("login");
+      if (typeof showAuthModal === "function") {
+        showAuthModal("login");
+      }
       return;
     }
 
@@ -305,13 +353,19 @@ const App = {
 
     // Close mobile menu if open
     this.closeMobileMenu();
+
+    // Smooth scroll to top
+    window.scrollTo({ top: 0, behavior: "smooth" });
   },
 
   // Update active navigation link
   updateActiveNavLink(sectionName) {
     this.elements.navLinks.forEach((link) => {
       Utils.removeClass(link, "active");
-      if (link.dataset.section === sectionName) {
+      if (
+        link.dataset.section === sectionName ||
+        link.getAttribute("href") === `#${sectionName}`
+      ) {
         Utils.addClass(link, "active");
       }
     });
@@ -330,11 +384,15 @@ const App = {
         this.loadProfile();
         break;
       default:
+        // Re-initialize icons for the section
+        if (window.lucide) {
+          setTimeout(() => lucide.createIcons(), 100);
+        }
         break;
     }
   },
 
-  // Load business ideas
+  // Load business ideas - IMPROVED with better error handling
   async loadBusinessIdeas() {
     if (!this.elements.businessGrid) return;
 
@@ -342,22 +400,53 @@ const App = {
       this.state.loading = true;
       this.showBusinessGridLoading();
 
-      const filters = {
-        status: Status.BUSINESS_IDEA.PUBLISHED,
-        limit: this.state.itemsPerPage * this.state.currentPage,
-      };
+      // Mock data for testing (replace with actual Firebase call)
+      const mockIdeas = [
+        {
+          id: "1",
+          title: "AI-Powered Healthcare Platform",
+          category: "technology",
+          description:
+            "Revolutionary healthcare platform using AI to improve patient outcomes and reduce costs.",
+          fundingNeeded: 5000000,
+          timeline: "18 months",
+          status: "published",
+          createdAt: new Date(),
+          authorId: "user1",
+        },
+        {
+          id: "2",
+          title: "Sustainable Food Delivery",
+          category: "ecommerce",
+          description:
+            "Eco-friendly food delivery service with zero-waste packaging and local sourcing.",
+          fundingNeeded: 2000000,
+          timeline: "12 months",
+          status: "published",
+          createdAt: new Date(),
+          authorId: "user2",
+        },
+        {
+          id: "3",
+          title: "EdTech Learning Platform",
+          category: "education",
+          description:
+            "Interactive learning platform for K-12 students with personalized curriculum.",
+          fundingNeeded: 3000000,
+          timeline: "24 months",
+          status: "published",
+          createdAt: new Date(),
+          authorId: "user3",
+        },
+      ];
 
-      const result = await FirebaseService.getBusinessIdeas(filters);
+      // Simulate API delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      if (result.success) {
-        this.state.businessIdeas = result.data;
-        this.state.filteredIdeas = [...result.data];
-        this.renderBusinessIdeas();
-        this.updateLoadMoreButton();
-      } else {
-        Utils.showError("Failed to load business ideas");
-        this.renderBusinessIdeasError();
-      }
+      this.state.businessIdeas = mockIdeas;
+      this.state.filteredIdeas = [...mockIdeas];
+      this.renderBusinessIdeas();
+      this.updateLoadMoreButton();
     } catch (error) {
       console.error("Error loading business ideas:", error);
       Utils.showError("Failed to load business ideas");
@@ -372,26 +461,26 @@ const App = {
     if (!this.elements.businessGrid) return;
 
     this.elements.businessGrid.innerHTML = `
-            <div class="loading-grid">
-                ${Array(6)
-                  .fill()
-                  .map(
-                    () => `
-                    <div class="business-card-skeleton">
-                        <div class="skeleton skeleton-image"></div>
-                        <div class="skeleton skeleton-title"></div>
-                        <div class="skeleton skeleton-text"></div>
-                        <div class="skeleton skeleton-text"></div>
-                        <div class="skeleton skeleton-button"></div>
-                    </div>
-                `
-                  )
-                  .join("")}
+      <div class="loading-grid">
+        ${Array(6)
+          .fill()
+          .map(
+            () => `
+            <div class="business-card-skeleton">
+              <div class="skeleton skeleton-image"></div>
+              <div class="skeleton skeleton-title"></div>
+              <div class="skeleton skeleton-text"></div>
+              <div class="skeleton skeleton-text"></div>
+              <div class="skeleton skeleton-button"></div>
             </div>
-        `;
+          `
+          )
+          .join("")}
+      </div>
+    `;
   },
 
-  // Render business ideas
+  // Render business ideas - FIXED
   renderBusinessIdeas() {
     if (!this.elements.businessGrid || !this.state.filteredIdeas) return;
 
@@ -406,100 +495,112 @@ const App = {
 
     // Re-initialize icons
     if (window.lucide) {
-      lucide.createIcons();
+      setTimeout(() => lucide.createIcons(), 100);
     }
   },
 
-  // Create business idea card HTML
+  // Create business idea card HTML - IMPROVED
   createBusinessIdeaCard(idea) {
     const fundingAmount = Utils.formatCurrency(idea.fundingNeeded);
     const timeAgo = Utils.timeAgo(idea.createdAt);
     const category = Utils.capitalizeFirst(idea.category);
 
+    // Check if current user is authenticated and not the author
+    const currentUser = auth?.currentUser;
+    const isAuthor = currentUser && currentUser.uid === idea.authorId;
+    const isInvestor = currentUser && currentUser.userType === "investor";
+
     return `
-            <div class="business-card" data-id="${idea.id}">
-                <div class="business-card-header">
-                    <div class="business-category">${category}</div>
-                    <div class="business-funding">${fundingAmount}</div>
-                </div>
-                <div class="business-card-content">
-                    <h3 class="business-title">${idea.title}</h3>
-                    <p class="business-description">${Utils.truncateText(
-                      idea.description,
-                      120
-                    )}</p>
-                    <div class="business-meta">
-                        <span class="business-timeline">
-                            <i data-lucide="clock"></i>
-                            ${idea.timeline}
-                        </span>
-                        <span class="business-time">
-                            <i data-lucide="calendar"></i>
-                            ${timeAgo}
-                        </span>
-                    </div>
-                </div>
-                <div class="business-card-footer">
-                    <button class="btn btn-outline btn-small" onclick="viewBusinessIdea('${
-                      idea.id
-                    }')">
-                        <i data-lucide="eye"></i>
-                        View Details
-                    </button>
-                    ${
-                      this.state.isAuthenticated &&
-                      this.state.currentUser.userType === "investor"
-                        ? `
-                        <button class="btn btn-primary btn-small" onclick="showInvestmentModal('${idea.id}')">
-                            <i data-lucide="trending-up"></i>
-                            Invest
-                        </button>
-                    `
-                        : ""
-                    }
-                </div>
-            </div>
-        `;
+      <div class="business-card" data-id="${idea.id}">
+        <div class="business-card-header">
+          <div class="business-category">${category}</div>
+          <div class="business-funding">${fundingAmount}</div>
+        </div>
+        <div class="business-card-content">
+          <h3 class="business-title">${idea.title}</h3>
+          <p class="business-description">${Utils.truncateText(
+            idea.description,
+            120
+          )}</p>
+          <div class="business-meta">
+            <span class="business-timeline">
+              <i data-lucide="clock"></i>
+              ${idea.timeline}
+            </span>
+            <span class="business-time">
+              <i data-lucide="calendar"></i>
+              ${timeAgo}
+            </span>
+          </div>
+        </div>
+        <div class="business-card-footer">
+          <button class="btn btn-outline btn-small" onclick="viewBusinessIdea('${
+            idea.id
+          }')">
+            <i data-lucide="eye"></i>
+            View Details
+          </button>
+          
+          ${!isAuthor ? `
+            <button class="btn btn-outline btn-small save-idea-btn" data-idea-id="${idea.id}">
+              <i data-lucide="bookmark-plus"></i>
+              Save
+            </button>
+          ` : ""}
+          
+          ${
+            !isAuthor && isInvestor
+              ? `
+              <button class="btn btn-success btn-small invest-btn" data-idea-id="${idea.id}">
+                <i data-lucide="trending-up"></i>
+                Invest
+              </button>
+            `
+              : ""
+          }
+        </div>
+      </div>
+    `;
   },
 
   // Render empty state
   renderBusinessIdeasEmpty() {
     this.elements.businessGrid.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">
-                    <i data-lucide="search-x"></i>
-                </div>
-                <h3>No business ideas found</h3>
-                <p>Try adjusting your search filters or check back later for new opportunities.</p>
-                <button class="btn btn-outline" onclick="App.clearFilters()">
-                    Clear Filters
-                </button>
-            </div>
-        `;
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i data-lucide="search-x"></i>
+        </div>
+        <h3>No business ideas found</h3>
+        <p>Try adjusting your search filters or check back later for new opportunities.</p>
+        <button class="btn btn-outline" onclick="App.clearFilters()">
+          Clear Filters
+        </button>
+      </div>
+    `;
 
     if (window.lucide) {
-      lucide.createIcons();
+      setTimeout(() => lucide.createIcons(), 100);
     }
   },
 
   // Render error state
   renderBusinessIdeasError() {
     this.elements.businessGrid.innerHTML = `
-            <div class="error-state">
-                <div class="error-icon">
-                    <i data-lucide="alert-circle"></i>
-                </div>
-                <h3>Failed to load business ideas</h3>
-                <p>Something went wrong while loading the content. Please try again.</p>
-                <button class="btn btn-primary" onclick="App.loadBusinessIdeas()">
-                    <i data-lucide="refresh-cw"></i>
-                    Retry
-                </button>
-            </div>
-        `;
+      <div class="error-state">
+        <div class="error-icon">
+          <i data-lucide="alert-circle"></i>
+        </div>
+        <h3>Failed to load business ideas</h3>
+        <p>Something went wrong while loading the content. Please try again.</p>
+        <button class="btn btn-primary" onclick="App.loadBusinessIdeas()">
+          <i data-lucide="refresh-cw"></i>
+          Retry
+        </button>
+      </div>
+    `;
 
     if (window.lucide) {
-      lucide.createIcons();
+      setTimeout(() => lucide.createIcons(), 100);
     }
   },
 
@@ -634,10 +735,13 @@ const App = {
   updateLoadMoreButton() {
     if (!this.elements.loadMoreBtn) return;
 
-    const totalLoaded = this.state.businessIdeas.length;
-    const totalAvailable = this.state.businessIdeas.length; // This would come from pagination info
+    const totalLoaded = this.state.filteredIdeas.length;
+    const totalAvailable = this.state.businessIdeas.length;
 
-    if (totalLoaded >= totalAvailable) {
+    if (
+      totalLoaded >= totalAvailable ||
+      totalAvailable <= this.state.itemsPerPage
+    ) {
       Utils.hide(this.elements.loadMoreBtn);
     } else {
       Utils.show(this.elements.loadMoreBtn);
@@ -650,142 +754,100 @@ const App = {
 
     // Load content based on user type
     switch (this.state.currentUser.userType) {
-      case UserTypes.ENTREPRENEUR:
+      case "business":
         this.loadEntrepreneurContent();
         break;
-      case UserTypes.INVESTOR:
+      case "investor":
         this.loadInvestorContent();
         break;
-      case UserTypes.BANKER:
+      case "banker":
         this.loadBankerContent();
         break;
-      case UserTypes.ADVISOR:
+      case "advisor":
         this.loadAdvisorContent();
         break;
     }
   },
 
-  // Load entrepreneur-specific content
-  loadEntrepreneurContent() {
-    // Implementation for entrepreneur-specific features
-    console.log("Loading entrepreneur content...");
-  },
+  // FIXED: Mobile menu toggle functionality
+  toggleMobileMenu() {
+    if (!this.elements.navMenu || !this.elements.mobileMenuToggle) return;
 
-  // Load investor-specific content
-  loadInvestorContent() {
-    // Implementation for investor-specific features
-    console.log("Loading investor content...");
-  },
+    this.state.isMobileMenuOpen = !this.state.isMobileMenuOpen;
 
-  // Load banker-specific content
-  loadBankerContent() {
-    // Implementation for banker-specific features
-    console.log("Loading banker content...");
-  },
-
-  // Load advisor-specific content
-  loadAdvisorContent() {
-    // Implementation for advisor-specific features
-    console.log("Loading advisor content...");
-  },
-
-  // Load dashboard
-  loadDashboard() {
-    if (!this.state.isAuthenticated) return;
-
-    const dashboardSection = Utils.getElementById("dashboard");
-    if (!dashboardSection) return;
-
-    // Load dashboard based on user type
-    switch (this.state.currentUser.userType) {
-      case UserTypes.ENTREPRENEUR:
-        this.loadEntrepreneurDashboard();
-        break;
-      case UserTypes.INVESTOR:
-        this.loadInvestorDashboard();
-        break;
-      case UserTypes.BANKER:
-        this.loadBankerDashboard();
-        break;
-      case UserTypes.ADVISOR:
-        this.loadAdvisorDashboard();
-        break;
+    if (this.state.isMobileMenuOpen) {
+      this.openMobileMenu();
+    } else {
+      this.closeMobileMenu();
     }
   },
 
-  // Dashboard loading methods (to be implemented)
-  loadEntrepreneurDashboard() {
-    console.log("Loading entrepreneur dashboard...");
-  },
-
-  loadInvestorDashboard() {
-    console.log("Loading investor dashboard...");
-  },
-
-  loadBankerDashboard() {
-    console.log("Loading banker dashboard...");
-  },
-
-  loadAdvisorDashboard() {
-    console.log("Loading advisor dashboard...");
-  },
-
-  // Load profile
-  loadProfile() {
-    if (!this.state.isAuthenticated) return;
-    console.log("Loading user profile...");
-  },
-
-  // Handle mobile menu toggle
-  toggleMobileMenu() {
+  // FIXED: Open mobile menu
+  openMobileMenu() {
     if (!this.elements.navMenu) return;
 
-    const isOpen = Utils.hasClass(this.elements.navMenu, "mobile-open");
+    this.state.isMobileMenuOpen = true;
 
-    if (isOpen) {
-      this.closeMobileMenu();
-    } else {
-      this.openMobileMenu();
-    }
-  },
-
-  // Open mobile menu
-  openMobileMenu() {
+    // Add classes for mobile menu
     Utils.addClass(this.elements.navMenu, "mobile-open");
+    Utils.addClass(this.elements.navMenu, "active");
     Utils.addClass(document.body, "menu-open");
+    Utils.addClass(this.elements.mobileMenuToggle, "active");
 
     // Update toggle icon
     const icon = this.elements.mobileMenuToggle.querySelector("[data-lucide]");
     if (icon) {
       icon.setAttribute("data-lucide", "x");
-      lucide.createIcons();
+      if (window.lucide) {
+        lucide.createIcons();
+      }
     }
+
+    // Prevent body scroll
+    document.body.style.overflow = "hidden";
   },
 
-  // Close mobile menu
+  // FIXED: Close mobile menu
   closeMobileMenu() {
+    if (!this.elements.navMenu) return;
+
+    this.state.isMobileMenuOpen = false;
+
+    // Remove classes for mobile menu
     Utils.removeClass(this.elements.navMenu, "mobile-open");
+    Utils.removeClass(this.elements.navMenu, "active");
     Utils.removeClass(document.body, "menu-open");
+    Utils.removeClass(this.elements.mobileMenuToggle, "active");
 
     // Update toggle icon
     const icon = this.elements.mobileMenuToggle.querySelector("[data-lucide]");
     if (icon) {
       icon.setAttribute("data-lucide", "menu");
-      lucide.createIcons();
+      if (window.lucide) {
+        lucide.createIcons();
+      }
     }
+
+    // Restore body scroll
+    document.body.style.overflow = "";
   },
 
-  // Handle scroll events
+  // IMPROVED: Handle scroll events
   handleScroll() {
     const scrollY = window.scrollY;
 
-    // Header scroll effect
+    // Header scroll effect with better performance
     if (this.elements.header) {
-      if (scrollY > 100) {
+      if (scrollY > 50) {
         Utils.addClass(this.elements.header, "scrolled");
       } else {
         Utils.removeClass(this.elements.header, "scrolled");
       }
+    }
+
+    // Close mobile menu on scroll (mobile UX improvement)
+    if (this.state.isMobileMenuOpen && window.innerWidth <= 991) {
+      this.closeMobileMenu();
     }
   },
 
@@ -815,15 +877,52 @@ const App = {
     }
   },
 
-  // Handle window resize
+  // IMPROVED: Handle window resize
   handleResize() {
+    const width = window.innerWidth;
+
     // Close mobile menu on desktop
-    if (window.innerWidth > 768) {
+    if (width > 991 && this.state.isMobileMenuOpen) {
       this.closeMobileMenu();
+    }
+
+    // Update mobile menu state
+    if (width <= 991) {
+      // Ensure mobile menu toggle is visible
+      if (this.elements.mobileMenuToggle) {
+        this.elements.mobileMenuToggle.style.display = "flex";
+      }
+    } else {
+      // Hide mobile menu toggle on desktop
+      if (this.elements.mobileMenuToggle) {
+        this.elements.mobileMenuToggle.style.display = "none";
+      }
+
+      // Ensure nav menu is visible on desktop
+      if (this.elements.navMenu) {
+        Utils.removeClass(this.elements.navMenu, "mobile-open");
+        Utils.removeClass(this.elements.navMenu, "active");
+      }
+    }
+
+    // Trigger re-render of responsive elements
+    this.triggerResponsiveUpdates();
+  },
+
+  // NEW: Trigger responsive updates
+  triggerResponsiveUpdates() {
+    // Re-initialize any dynamic content that needs responsive updates
+    if (this.state.currentSection === "browse" && this.elements.businessGrid) {
+      const cards =
+        this.elements.businessGrid.querySelectorAll(".business-card");
+      cards.forEach((card, index) => {
+        // Add a small delay to create staggered animation
+        card.style.animationDelay = `${index * 0.1}s`;
+      });
     }
   },
 
-  // Handle clicks outside elements
+  // IMPROVED: Handle clicks outside elements
   handleOutsideClick(e) {
     // Close user dropdown if clicking outside
     const userDropdown = Utils.getElementById("userDropdown");
@@ -832,14 +931,17 @@ const App = {
     if (
       userDropdown &&
       !userDropdown.contains(e.target) &&
+      userAvatar &&
       !userAvatar.contains(e.target)
     ) {
       Utils.hide(userDropdown);
     }
 
-    // Close mobile menu if clicking outside
+    // Close mobile menu if clicking outside (improved logic)
     if (
+      this.state.isMobileMenuOpen &&
       this.elements.navMenu &&
+      this.elements.mobileMenuToggle &&
       !this.elements.navMenu.contains(e.target) &&
       !this.elements.mobileMenuToggle.contains(e.target)
     ) {
@@ -847,16 +949,45 @@ const App = {
     }
   },
 
+  // Load dashboard
+  loadDashboard() {
+    if (!this.state.isAuthenticated) return;
+    console.log("Loading dashboard...");
+  },
+
+  // Load profile
+  loadProfile() {
+    if (!this.state.isAuthenticated) return;
+    console.log("Loading user profile...");
+  },
+
+  // Load user type specific content
+  loadEntrepreneurContent() {
+    console.log("Loading entrepreneur content...");
+  },
+
+  loadInvestorContent() {
+    console.log("Loading investor content...");
+  },
+
+  loadBankerContent() {
+    console.log("Loading banker content...");
+  },
+
+  loadAdvisorContent() {
+    console.log("Loading advisor content...");
+  },
+
   // Update navigation for authenticated user
   updateNavigationForUser() {
     // Add dashboard link if not present
-    // This would be implemented based on your navigation structure
+    console.log("Updating navigation for authenticated user");
   },
 
   // Update navigation for guest user
   updateNavigationForGuest() {
     // Remove user-specific navigation items
-    // This would be implemented based on your navigation structure
+    console.log("Updating navigation for guest user");
   },
 };
 
@@ -872,8 +1003,14 @@ window.toggleUserDropdown = () => {
 
 window.logout = async () => {
   try {
-    const result = await FirebaseService.signOut();
-    if (result.success) {
+    if (typeof FirebaseService !== "undefined") {
+      const result = await FirebaseService.signOut();
+      if (result.success) {
+        Utils.showSuccess("Signed out successfully");
+      }
+    } else {
+      // Mock logout for testing
+      App.handleUserSignedOut();
       Utils.showSuccess("Signed out successfully");
     }
   } catch (error) {
@@ -884,12 +1021,12 @@ window.logout = async () => {
 
 window.viewBusinessIdea = (ideaId) => {
   console.log("Viewing business idea:", ideaId);
-  // Implementation for viewing business idea details
+  Utils.showInfo(`Viewing business idea: ${ideaId}`);
 };
 
 window.showInvestmentModal = (ideaId) => {
   console.log("Showing investment modal for:", ideaId);
-  // Implementation for investment modal
+  Utils.showInfo(`Opening investment modal for idea: ${ideaId}`);
 };
 
 window.hideToast = () => {
@@ -898,3 +1035,4 @@ window.hideToast = () => {
 
 // Export App for global access
 window.App = App;
+

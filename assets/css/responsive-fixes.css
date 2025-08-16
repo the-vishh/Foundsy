@@ -367,7 +367,7 @@ body.menu-open {
 .form-group label {
   display: block;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--text-third);
   margin-bottom: var(--spacing-sm);
 }
 

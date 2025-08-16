@@ -7,13 +7,30 @@ const BusinessIdeaManager = {
     isSubmitting: false,
     currentIdea: null,
     userIdeas: [],
+    isInitialized: false,
   },
 
   // Initialize the business idea manager
   init() {
     console.log("Initializing Business Idea Manager...");
-    this.bindEvents();
-    this.loadUserIdeas();
+    
+    // Only initialize if user is authenticated and explicitly requests it
+    if (typeof auth !== 'undefined' && auth.currentUser) {
+      this.bindEvents();
+      this.loadUserIdeas();
+      this.state.isInitialized = true;
+      console.log("Business Idea Manager initialized successfully");
+    } else {
+      console.log("Business Idea Manager: User not authenticated, skipping initialization");
+    }
+  },
+
+  // Manual initialization for when user navigates to business section
+  initOnDemand() {
+    if (!this.state.isInitialized) {
+      console.log("Business Idea Manager: Initializing on demand...");
+      this.init();
+    }
   },
 
   // Bind event listeners
@@ -508,6 +525,11 @@ const BusinessIdeaManager = {
     const timeAgo = this.timeAgo(idea.createdAt?.toDate() || new Date());
     const category = this.capitalizeFirst(idea.category);
 
+    // Check if current user is authenticated and not the author
+    const currentUser = auth?.currentUser;
+    const isAuthor = currentUser && currentUser.uid === idea.authorId;
+    const isInvestor = currentUser && currentUser.userType === "investor";
+
     return `
       <div class="idea-card" data-idea-id="${idea.id}">
         <div class="idea-header">
@@ -552,6 +574,14 @@ const BusinessIdeaManager = {
             <i data-lucide="eye"></i>
             View Details
           </button>
+          
+          ${!isAuthor ? `
+            <button class="btn btn-outline btn-small save-idea-btn" data-idea-id="${idea.id}">
+              <i data-lucide="bookmark-plus"></i>
+              Save
+            </button>
+          ` : ""}
+          
           ${
             showActions
               ? `
@@ -562,8 +592,9 @@ const BusinessIdeaManager = {
           `
               : ""
           }
+          
           ${
-            !showActions && auth?.currentUser?.uid !== idea.authorId
+            !isAuthor && isInvestor
               ? `
             <button class="btn btn-success btn-small invest-btn" data-idea-id="${idea.id}">
               <i data-lucide="trending-up"></i>
@@ -853,7 +884,7 @@ window.BusinessIdeaManager = BusinessIdeaManager;
 
 // Auto-initialize when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
-  BusinessIdeaManager.init();
+  // BusinessIdeaManager.init(); // Removed auto-initialization
 });
 
 // Replace the placeholder function in dashboard

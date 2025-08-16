@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage your Fundsy profile and account settings">
+    <title>Profile - Fundsy</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/auth.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Loading Profile...</p>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="header" id="mainHeader">
+        <nav class="navbar container">
+            <div class="nav-brand">
+                <img src="../assets/images/logo.svg" alt="Fundsy Logo" class="logo-img">
+                <span class="brand-text">Fundsy</span>
+            </div>
+
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item">
+                    <a href="../index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="browse.html" class="nav-link">Browse Ideas</a>
+                </li>
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a href="profile.html" class="nav-link active">Profile</a>
+                </li>
+            </ul>
+
+            <!-- User Menu -->
+            <div class="user-menu" id="userMenu">
+                <div class="user-avatar" id="userAvatar" onclick="toggleUserDropdown()">
+                    <img src="" alt="User Avatar" class="avatar-img hidden" id="avatarImg">
+                    <span class="avatar-text" id="avatarText">U</span>
+                </div>
+                <div class="dropdown-menu hidden" id="userDropdown">
+                    <div class="dropdown-header">
+                        <span class="user-name" id="userName">User Name</span>
+                        <span class="user-type" id="userType">User Type</span>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="dashboard.html" class="dropdown-item">
+                        <i data-lucide="layout-dashboard"></i>
+                        Dashboard
+                    </a>
+                    <a href="profile.html" class="dropdown-item">
+                        <i data-lucide="user"></i>
+                        Profile
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item logout-btn" onclick="logout()">
+                        <i data-lucide="log-out"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <i data-lucide="menu"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="profile-section">
+            <div class="container">
+                <!-- Profile Header -->
+                <div class="profile-header">
+                    <div class="profile-header-content">
+                        <div class="profile-avatar-section">
+                            <div class="profile-avatar-large" id="profileAvatarLarge">
+                                <span id="profileAvatarText">U</span>
+                                <img src="" alt="Profile Avatar" class="avatar-img hidden" id="profileAvatarImg">
+                            </div>
+                            <button class="btn btn-outline btn-small" onclick="changeProfilePhoto()">
+                                <i data-lucide="camera"></i>
+                                Change Photo
+                            </button>
+                        </div>
+
+                        <div class="profile-info">
+                            <h1 class="profile-name" id="profileName">User Name</h1>
+                            <p class="profile-type" id="profileType">User Type</p>
+                            <p class="profile-email" id="profileEmail">user@example.com</p>
+                            <div class="profile-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number" id="memberSince">2024</span>
+                                    <span class="stat-label">Member Since</span>
+                                </div>
+                                <div class="stat-item" id="profileStat1">
+                                    <span class="stat-number" id="stat1Number">0</span>
+                                    <span class="stat-label" id="stat1Label">Activities</span>
+                                </div>
+                                <div class="stat-item" id="profileStat2">
+                                    <span class="stat-number" id="stat2Number">0</span>
+                                    <span class="stat-label" id="stat2Label">Connections</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Navigation -->
+                <nav class="profile-nav">
+                    <button class="profile-nav-btn active" data-tab="personal">
+                        <i data-lucide="user"></i>
+                        Personal Info
+                    </button>
+                    <button class="profile-nav-btn" data-tab="professional">
+                        <i data-lucide="briefcase"></i>
+                        Professional
+                    </button>
+                    <button class="profile-nav-btn" data-tab="preferences">
+                        <i data-lucide="settings"></i>
+                        Preferences
+                    </button>
+                    <button class="profile-nav-btn" data-tab="security">
+                        <i data-lucide="shield"></i>
+                        Security
+                    </button>
+                    <button class="profile-nav-btn" data-tab="notifications">
+                        <i data-lucide="bell"></i>
+                        Notifications
+                    </button>
+                </nav>
+
+                <!-- Profile Content -->
+                <div class="profile-content">
+                    <!-- Personal Information Tab -->
+                    <div class="profile-tab active" id="personal-tab">
+                        <div class="profile-form-container">
+                            <h2>Personal Information</h2>
+                            <p>Update your personal details and contact information.</p>
+
+                            <form id="personalInfoForm" class="profile-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="firstName">First Name</label>
+                                        <input type="text" id="firstName" name="firstName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="lastName">Last Name</label>
+                                        <input type="text" id="lastName" name="lastName" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="emailAddress">Email Address</label>
+                                    <input type="email" id="emailAddress" name="email" readonly>
+                                    <small class="form-help">Email cannot be changed. Contact support if needed.</small>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="phoneNumber">Phone Number</label>
+                                        <input type="tel" id="phoneNumber" name="phone">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="location">Location</label>
+                                        <input type="text" id="location" name="location" placeholder="City, State, Country">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="bio">Bio/About</label>
+                                    <textarea id="bio" name="bio" rows="4"
+                                              placeholder="Tell others about yourself, your experience, and interests..."></textarea>
+                                    <small class="form-help">This will be visible to other users on the platform.</small>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-lucide="save"></i>
+                                        Save Changes
+                                    </button>
+                                    <button type="button" class="btn btn-outline" onclick="resetPersonalForm()">
+                                        <i data-lucide="refresh-cw"></i>
+                                        Reset
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Professional Information Tab -->
+                    <div class="profile-tab" id="professional-tab">
+                        <div class="profile-form-container">
+                            <h2>Professional Information</h2>
+                            <p>Provide professional details to build trust with other users.</p>
+
+                            <form id="professionalInfoForm" class="profile-form">
+                                <div class="form-group">
+                                    <label for="company">Company/Organization</label>
+                                    <input type="text" id="company" name="company" placeholder="Your current company or organization">
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="jobTitle">Job Title/Position</label>
+                                        <input type="text" id="jobTitle" name="jobTitle" placeholder="Your current role">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="experience">Years of Experience</label>
+                                        <select id="experience" name="experience">
+                                            <option value="">Select experience</option>
+                                            <option value="0-1">0-1 years</option>
+                                            <option value="2-5">2-5 years</option>
+                                            <option value="6-10">6-10 years</option>
+                                            <option value="11-15">11-15 years</option>
+                                            <option value="16+">16+ years</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="industry">Industry</label>
+                                    <select id="industry" name="industry">
+                                        <option value="">Select industry</option>
+                                        <option value="technology">Technology</option>
+                                        <option value="finance">Finance</option>
+                                        <option value="healthcare">Healthcare</option>
+                                        <option value="education">Education</option>
+                                        <option value="manufacturing">Manufacturing</option>
+                                        <option value="retail">Retail</option>
+                                        <option value="real-estate">Real Estate</option>
+                                        <option value="consulting">Consulting</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="skills">Skills & Expertise</label>
+                                    <input type="text" id="skills" name="skills"
+                                           placeholder="e.g., Business Development, Marketing, Technology">
+                                    <small class="form-help">Separate skills with commas</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="linkedin">LinkedIn Profile</label>
+                                    <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/yourprofile">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="website">Website/Portfolio</label>
+                                    <input type="url" id="website" name="website" placeholder="https://yourwebsite.com">
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-lucide="save"></i>
+                                        Save Changes
+                                    </button>
+                                    <button type="button" class="btn btn-outline" onclick="resetProfessionalForm()">
+                                        <i data-lucide="refresh-cw"></i>
+                                        Reset
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Preferences Tab -->
+                    <div class="profile-tab" id="preferences-tab">
+                        <div class="profile-form-container">
+                            <h2>Preferences</h2>
+                            <p>Customize your platform experience and interests.</p>
+
+                            <form id="preferencesForm" class="profile-form">
+                                <div class="form-section">
+                                    <h3>Investment Interests (For Investors)</h3>
+                                    <div id="investorPreferences" class="hidden">
+                                        <div class="form-group">
+                                            <label>Preferred Categories</label>
+                                            <div class="checkbox-group">
+                                                <label class="checkbox-item">
+                                                    <input type="checkbox" name="categories" value="technology">
+                                                    <span class="checkmark"></span>
+                                                    Technology
+                                                </label>
+                                                <label class="checkbox-item">
+                                                    <input type="checkbox" name="categories" value="healthcare">
+                                                    <span class="checkmark"></span>
+                                                    Healthcare
+                                                </label>
+                                                <label class="checkbox-item">
+                                                    <input type="checkbox" name="categories" value="finance">
+                                                    <span class="checkmark"></span>
+                                                    Finance
+                                                </label>
+                                                <label class="checkbox-item">
+                                                    <input type="checkbox" name="categories" value="education">
+                                                    <span class="checkmark"></span>
+                                                    Education
+                                                </label>
+                                                <label class="checkbox-item">
+                                                    <input type="checkbox" name="categories" value="ecommerce">
+                                                    <span class="checkmark"></span>
+                                                    E-commerce
+                                                </label>
+                                                <label class="checkbox-item">
+                                                    <input type="checkbox" name="categories" value="manufacturing">
+                                                    <span class="checkmark"></span>
+                                                    Manufacturing
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="minInvestment">Minimum Investment (₹)</label>
+                                                <input type="number" id="minInvestment" name="minInvestment"
+                                                       min="0" step="10000" placeholder="100000">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="maxInvestment">Maximum Investment (₹)</label>
+                                                <input type="number" id="maxInvestment" name="maxInvestment"
+                                                       min="0" step="10000" placeholder="10000000">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="entrepreneurPreferences" class="hidden">
+                                        <h3>Business Preferences (For Entrepreneurs)</h3>
+                                        <div class="form-group">
+                                            <label for="primaryCategory">Primary Business Category</label>
+                                            <select id="primaryCategory" name="primaryCategory">
+                                                <option value="">Select category</option>
+                                                <option value="technology">Technology</option>
+                                                <option value="healthcare">Healthcare</option>
+                                                <option value="finance">Finance</option>
+                                                <option value="education">Education</option>
+                                                <option value="ecommerce">E-commerce</option>
+                                                <option value="manufacturing">Manufacturing</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <h3>Communication Preferences</h3>
+                                    <div class="form-group">
+                                        <label>Preferred Contact Method</label>
+                                        <div class="radio-group">
+                                            <label class="radio-item">
+                                                <input type="radio" name="contactMethod" value="email" checked>
+                                                <span class="radio-mark"></span>
+                                                Email
+                                            </label>
+                                            <label class="radio-item">
+                                                <input type="radio" name="contactMethod" value="phone">
+                                                <span class="radio-mark"></span>
+                                                Phone
+                                            </label>
+                                            <label class="radio-item">
+                                                <input type="radio" name="contactMethod" value="platform">
+                                                <span class="radio-mark"></span>
+                                                Platform Messages Only
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="timezone">Timezone</label>
+                                        <select id="timezone" name="timezone">
+                                            <option value="Asia/Kolkata" selected>India Standard Time (IST)</option>
+                                            <option value="America/New_York">Eastern Time (ET)</option>
+                                            <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                                            <option value="Europe/London">Greenwich Mean Time (GMT)</option>
+                                            <option value="Asia/Singapore">Singapore Standard Time</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-lucide="save"></i>
+                                        Save Preferences
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Security Tab -->
+                    <div class="profile-tab" id="security-tab">
+                        <div class="profile-form-container">
+                            <h2>Security & Privacy</h2>
+                            <p>Manage your account security and privacy settings.</p>
+
+                            <!-- Password Change -->
+                            <div class="security-section">
+                                <h3>Change Password</h3>
+                                <form id="passwordChangeForm" class="profile-form">
+                                    <div class="form-group">
+                                        <label for="currentPassword">Current Password</label>
+                                        <input type="password" id="currentPassword" name="currentPassword" required>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="newPassword">New Password</label>
+                                            <input type="password" id="newPassword" name="newPassword"
+                                                   minlength="6" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="confirmNewPassword">Confirm New Password</label>
+                                            <input type="password" id="confirmNewPassword" name="confirmNewPassword"
+                                                   minlength="6" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i data-lucide="key"></i>
+                                            Update Password
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Two-Factor Authentication -->
+                            <div class="security-section">
+                                <h3>Two-Factor Authentication</h3>
+                                <div class="security-option">
+                                    <div class="security-option-content">
+                                        <h4>Email Authentication</h4>
+                                        <p>Receive verification codes via email for enhanced security.</p>
+                                    </div>
+                                    <div class="security-option-action">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="emailAuth">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Privacy Settings -->
+                            <div class="security-section">
+                                <h3>Privacy Settings</h3>
+                                <div class="security-option">
+                                    <div class="security-option-content">
+                                        <h4>Profile Visibility</h4>
+                                        <p>Control who can see your profile information.</p>
+                                    </div>
+                                    <div class="security-option-action">
+                                        <select id="profileVisibility" name="profileVisibility" class="form-select">
+                                            <option value="public">Public</option>
+                                            <option value="members">Members Only</option>
+                                            <option value="private">Private</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="security-option">
+                                    <div class="security-option-content">
+                                        <h4>Contact Information</h4>
+                                        <p>Allow other users to see your contact details.</p>
+                                    </div>
+                                    <div class="security-option-action">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="showContact" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Account Actions -->
+                            <div class="security-section danger-zone">
+                                <h3>Danger Zone</h3>
+                                <div class="security-option">
+                                    <div class="security-option-content">
+                                        <h4>Export Account Data</h4>
+                                        <p>Download a copy of your account data and activity.</p>
+                                    </div>
+                                    <div class="security-option-action">
+                                        <button class="btn btn-outline" onclick="exportAccountData()">
+                                            <i data-lucide="download"></i>
+                                            Export Data
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="security-option">
+                                    <div class="security-option-content">
+                                        <h4>Delete Account</h4>
+                                        <p class="text-danger">Permanently delete your account and all associated data.</p>
+                                    </div>
+                                    <div class="security-option-action">
+                                        <button class="btn btn-danger" onclick="showDeleteAccountModal()">
+                                            <i data-lucide="trash-2"></i>
+                                            Delete Account
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notifications Tab -->
+                    <div class="profile-tab" id="notifications-tab">
+                        <div class="profile-form-container">
+                            <h2>Notification Settings</h2>
+                            <p>Choose what notifications you want to receive and how.</p>
+
+                            <form id="notificationForm" class="profile-form">
+                                <div class="notification-section">
+                                    <h3>Email Notifications</h3>
+
+                                    <div class="notification-option">
+                                        <div class="notification-content">
+                                            <h4>New Investment Opportunities</h4>
+                                            <p>Get notified when new business ideas match your interests.</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" name="emailNewOpportunities" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+
+                                    <div class="notification-option">
+                                        <div class="notification-content">
+                                            <h4>Investment Proposals</h4>
+                                            <p>Receive notifications about new investment proposals.</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" name="emailProposals" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+
+                                    <div class="notification-option">
+                                        <div class="notification-content">
+                                            <h4>Messages</h4>
+                                            <p>Get email notifications for new messages.</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" name="emailMessages" checked>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+
+                                    <div class="notification-option">
+                                        <div class="notification-content">
+                                            <h4>Weekly Summary</h4>
+                                            <p>Receive a weekly summary of platform activity.</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" name="emailWeeklySummary">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="notification-section">
+                                    <h3>Platform Notifications</h3>
+
+                                    <div class="notification-option">
+                                        <div class="notification-content">
+                                            <h4>Browser Notifications</h4>
+                                            <p>Show notifications in your browser when the app is open.</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" name="browserNotifications">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+
+                                    <div class="notification-option">
+                                        <div class="notification-content">
+                                            <h4>Sound Notifications</h4>
+                                            <p>Play sounds for important notifications.</p>
+                                        </div>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" name="soundNotifications">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-lucide="save"></i>
+                                        Save Notification Settings
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Delete Account Modal -->
+    <div id="deleteAccountModal" class="modal hidden">
+        <div class="modal-overlay" onclick="hideDeleteAccountModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="hideDeleteAccountModal()">
+                <i data-lucide="x"></i>
+            </button>
+
+            <div class="delete-account-content">
+                <div class="warning-icon">
+                    <i data-lucide="alert-triangle"></i>
+                </div>
+                <h2>Delete Account</h2>
+                <p>Are you sure you want to permanently delete your account? This action cannot be undone.</p>
+
+                <div class="delete-confirmation">
+                    <p>Please type <strong>DELETE</strong> to confirm:</p>
+                    <input type="text" id="deleteConfirmation" placeholder="Type DELETE here">
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="hideDeleteAccountModal()">Cancel</button>
+                    <button class="btn btn-danger" id="confirmDeleteBtn" onclick="confirmDeleteAccount()" disabled>
+                        <i data-lucide="trash-2"></i>
+                        Delete Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden">
+        <div class="toast-content">
+            <i data-lucide="check-circle" class="toast-icon"></i>
+            <span class="toast-message">Success message</span>
+        </div>
+        <button class="toast-close" onclick="hideToast()">
+            <i data-lucide="x"></i>
+        </button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+
+    <!-- JavaScript Files -->
+    <script src="../assets/js/firebase-config.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/auth.js"></script>
+
+    <script>
+        // Profile Page Application Logic
+        class ProfilePage {
+            constructor() {
+                this.currentUser = null;
+                this.originalData = {};
+                this.hasUnsavedChanges = false;
+            }
+
+            async init() {
+                console.log('Initializing Profile Page...');
+
+                // Initialize authentication
+                this.initAuth();
+
+                // Initialize UI elements
+                this.initializeElements();
+
+                // Initialize event listeners
+                this.bindEvents();
+
+                console.log('Profile Page initialized successfully');
+            }
+
+            initAuth() {
+                auth.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        await this.handleUserSignedIn(user);
+                    } else {
+                        // Redirect to home page if not authenticated
+                        window.location.href = '../index.html';
+                    }
+                });
+            }
+
+            async handleUserSignedIn(user) {
+                try {
+                    const profileResult = await FirebaseService.getUserProfile(user.uid);
+                    if (profileResult.success) {
+                        this.currentUser = {
+                            uid: user.uid,
+                            email: user.email,
+                            emailVerified: user.emailVerified,
+                            ...profileResult.data
+                        };
+
+                        this.originalData = JSON.parse(JSON.stringify(this.currentUser));
+                        this.updateUserInterface();
+                        this.loadUserData();
+                    } else {
+                        this.showError('Failed to load user profile');
+                    }
+                } catch (error) {
+                    console.error('Error handling user sign in:', error);
+                    this.showError('Authentication error occurred');
+                }
+            }
+
+            initializeElements() {
+                // Cache DOM elements
+                this.elements = {
+                    profileName: document.getElementById('profileName'),
+                    profileType: document.getElementById('profileType'),
+                    profileEmail: document.getElementById('profileEmail'),
+                    profileAvatarText: document.getElementById('profileAvatarText'),
+                    profileAvatarImg: document.getElementById('profileAvatarImg'),
+                    memberSince: document.getElementById('memberSince'),
+                    stat1Number: document.getElementById('stat1Number'),
+                    stat1Label: document.getElementById('stat1Label'),
+                    stat2Number: document.getElementById('stat2Number'),
+                    stat2Label: document.getElementById('stat2Label'),
+                    navButtons: document.querySelectorAll('.profile-nav-btn'),
+                    tabs: document.querySelectorAll('.profile-tab'),
+                    forms: document.querySelectorAll('.profile-form'),
+                    deleteConfirmation: document.getElementById('deleteConfirmation'),
+                    confirmDeleteBtn: document.getElementById('confirmDeleteBtn')
+                };
+            }
+
+            bindEvents() {
+                // Tab navigation
+                this.elements.navButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const tabId = btn.dataset.tab;
+                        this.switchTab(tabId);
+                    });
+                });
+
+                // Form submissions
+                const personalForm = document.getElementById('personalInfoForm');
+                if (personalForm) {
+                    personalForm.addEventListener('submit', (e) => this.handlePersonalInfoSubmit(e));
+                }
+
+                const professionalForm = document.getElementById('professionalInfoForm');
+                if (professionalForm) {
+                    professionalForm.addEventListener('submit', (e) => this.handleProfessionalInfoSubmit(e));
+                }
+
+                const preferencesForm = document.getElementById('preferencesForm');
+                if (preferencesForm) {
+                    preferencesForm.addEventListener('submit', (e) => this.handlePreferencesSubmit(e));
+                }
+
+                const passwordForm = document.getElementById('passwordChangeForm');
+                if (passwordForm) {
+                    passwordForm.addEventListener('submit', (e) => this.handlePasswordChange(e));
+                }
+
+                const notificationForm = document.getElementById('notificationForm');
+                if (notificationForm) {
+                    notificationForm.addEventListener('submit', (e) => this.handleNotificationSettingsSubmit(e));
+                }
+
+                // Delete account confirmation
+                this.elements.deleteConfirmation.addEventListener('input', (e) => {
+                    const isValid = e.target.value === 'DELETE';
+                    this.elements.confirmDeleteBtn.disabled = !isValid;
+                });
+
+                // Track form changes
+                this.elements.forms.forEach(form => {
+                    const inputs = form.querySelectorAll('input, textarea, select');
+                    inputs.forEach(input => {
+                        input.addEventListener('change', () => {
+                            this.hasUnsavedChanges = true;
+                        });
+                    });
+                });
+
+                // Warn about unsaved changes
+                window.addEventListener('beforeunload', (e) => {
+                    if (this.hasUnsavedChanges) {
+                        e.preventDefault();
+                        e.returnValue = '';
+                    }
+                });
+            }
+
+            updateUserInterface() {
+                if (!this.currentUser) return;
+
+                // Update header user display
+                const userName = `${this.currentUser.profile.firstName} ${this.currentUser.profile.lastName}`;
+                document.getElementById('userName').textContent = userName;
+                document.getElementById('userType').textContent = this.formatUserType(this.currentUser.userType);
+                document.getElementById('avatarText').textContent =
+                    `${this.currentUser.profile.firstName[0]}${this.currentUser.profile.lastName[0]}`.toUpperCase();
+
+                // Update profile header
+                this.elements.profileName.textContent = userName;
+                this.elements.profileType.textContent = this.formatUserType(this.currentUser.userType);
+                this.elements.profileEmail.textContent = this.currentUser.email;
+                this.elements.profileAvatarText.textContent =
+                    `${this.currentUser.profile.firstName[0]}${this.currentUser.profile.lastName[0]}`.toUpperCase();
+
+                // Update member since
+                if (this.currentUser.createdAt) {
+                    const memberSince = this.currentUser.createdAt.toDate ?
+                        this.currentUser.createdAt.toDate().getFullYear() :
+                        new Date(this.currentUser.createdAt).getFullYear();
+                    this.elements.memberSince.textContent = memberSince;
+                }
+
+                // Update stats based on user type
+                this.updateUserTypeSpecificUI();
+            }
+
+            updateUserTypeSpecificUI() {
+                const userType = this.currentUser.userType;
+
+                // Show/hide preference sections
+                const investorPrefs = document.getElementById('investorPreferences');
+                const entrepreneurPrefs = document.getElementById('entrepreneurPreferences');
+
+                if (userType === 'investor') {
+                    investorPrefs.classList.remove('hidden');
+                    entrepreneurPrefs.classList.add('hidden');
+                    this.elements.stat1Label.textContent = 'Investments';
+                    this.elements.stat2Label.textContent = 'Proposals Sent';
+                } else if (userType === 'business') {
+                    investorPrefs.classList.add('hidden');
+                    entrepreneurPrefs.classList.remove('hidden');
+                    this.elements.stat1Label.textContent = 'Business Ideas';
+                    this.elements.stat2Label.textContent = 'Proposals Received';
+                } else {
+                    investorPrefs.classList.add('hidden');
+                    entrepreneurPrefs.classList.add('hidden');
+                    this.elements.stat1Label.textContent = 'Activities';
+                    this.elements.stat2Label.textContent = 'Connections';
+                }
+            }
+
+            loadUserData() {
+                // Load personal information
+                document.getElementById('firstName').value = this.currentUser.profile.firstName || '';
+                document.getElementById('lastName').value = this.currentUser.profile.lastName || '';
+                document.getElementById('emailAddress').value = this.currentUser.email || '';
+                document.getElementById('phoneNumber').value = this.currentUser.profile.phone || '';
+                document.getElementById('location').value = this.currentUser.profile.location || '';
+                document.getElementById('bio').value = this.currentUser.profile.bio || '';
+
+                // Load professional information
+                document.getElementById('company').value = this.currentUser.profile.company || '';
+                document.getElementById('jobTitle').value = this.currentUser.profile.jobTitle || '';
+                document.getElementById('experience').value = this.currentUser.profile.experience || '';
+                document.getElementById('industry').value = this.currentUser.profile.industry || '';
+                document.getElementById('skills').value = this.currentUser.profile.skills || '';
+                document.getElementById('linkedin').value = this.currentUser.profile.linkedin || '';
+                document.getElementById('website').value = this.currentUser.profile.website || '';
+
+                // Load preferences
+                if (this.currentUser.preferences) {
+                    const prefs = this.currentUser.preferences;
+
+                    // Investment preferences
+                    if (prefs.categories) {
+                        prefs.categories.forEach(category => {
+                            const checkbox = document.querySelector(`input[name="categories"][value="${category}"]`);
+                            if (checkbox) checkbox.checked = true;
+                        });
+                    }
+
+                    if (prefs.investmentRange) {
+                        if (prefs.investmentRange.min) {
+                            document.getElementById('minInvestment').value = prefs.investmentRange.min;
+                        }
+                        if (prefs.investmentRange.max) {
+                            document.getElementById('maxInvestment').value = prefs.investmentRange.max;
+                        }
+                    }
+
+                    // Other preferences
+                    if (prefs.contactMethod) {
+                        const radio = document.querySelector(`input[name="contactMethod"][value="${prefs.contactMethod}"]`);
+                        if (radio) radio.checked = true;
+                    }
+
+                    if (prefs.timezone) {
+                        document.getElementById('timezone').value = prefs.timezone;
+                    }
+
+                    // Notification preferences
+                    Object.keys(prefs).forEach(key => {
+                        if (key.startsWith('email') || key.startsWith('browser') || key.startsWith('sound')) {
+                            const checkbox = document.querySelector(`input[name="${key}"]`);
+                            if (checkbox) checkbox.checked = prefs[key];
+                        }
+                    });
+                }
+
+                // Reset unsaved changes flag after loading
+                this.hasUnsavedChanges = false;
+            }
+
+            switchTab(tabId) {
+                // Remove active class from all nav buttons and tabs
+                this.elements.navButtons.forEach(btn => btn.classList.remove('active'));
+                this.elements.tabs.forEach(tab => tab.classList.remove('active'));
+
+                // Add active class to selected nav button and tab
+                const navButton = document.querySelector(`[data-tab="${tabId}"]`);
+                const tab = document.getElementById(`${tabId}-tab`);
+
+                if (navButton && tab) {
+                    navButton.classList.add('active');
+                    tab.classList.add('active');
+                }
+            }
+
+            async handlePersonalInfoSubmit(e) {
+                e.preventDefault();
+
+                const formData = new FormData(e.target);
+                const updateData = {
+                    profile: {
+                        ...this.currentUser.profile,
+                        firstName: formData.get('firstName'),
+                        lastName: formData.get('lastName'),
+                        phone: formData.get('phone'),
+                        location: formData.get('location'),
+                        bio: formData.get('bio')
+                    }
+                };
+
+                await this.updateProfile(updateData, 'Personal information updated successfully!');
+            }
+
+            async handleProfessionalInfoSubmit(e) {
+                e.preventDefault();
+
+                const formData = new FormData(e.target);
+                const updateData = {
+                    profile: {
+                        ...this.currentUser.profile,
+                        company: formData.get('company'),
+                        jobTitle: formData.get('jobTitle'),
+                        experience: formData.get('experience'),
+                        industry: formData.get('industry'),
+                        skills: formData.get('skills'),
+                        linkedin: formData.get('linkedin'),
+                        website: formData.get('website')
+                    }
+                };
+
+                await this.updateProfile(updateData, 'Professional information updated successfully!');
+            }
+
+            async handlePreferencesSubmit(e) {
+                e.preventDefault();
+
+                const formData = new FormData(e.target);
+                const categories = formData.getAll('categories');
+
+                const updateData = {
+                    preferences: {
+                        ...this.currentUser.preferences,
+                        categories: categories,
+                        investmentRange: {
+                            min: parseInt(formData.get('minInvestment')) || 0,
+                            max: parseInt(formData.get('maxInvestment')) || 100000000
+                        },
+                        contactMethod: formData.get('contactMethod'),
+                        timezone: formData.get('timezone'),
+                        primaryCategory: formData.get('primaryCategory')
+                    }
+                };
+
+                await this.updateProfile(updateData, 'Preferences updated successfully!');
+            }
+
+            async handlePasswordChange(e) {
+                e.preventDefault();
+
+                const formData = new FormData(e.target);
+                const currentPassword = formData.get('currentPassword');
+                const newPassword = formData.get('newPassword');
+                const confirmPassword = formData.get('confirmNewPassword');
+
+                if (newPassword !== confirmPassword) {
+                    this.showError('New passwords do not match');
+                    return;
+                }
+
+                try {
+                    // Re-authenticate user
+                    const credential = firebase.auth.EmailAuthProvider.credential(
+                        this.currentUser.email,
+                        currentPassword
+                    );
+                    await auth.currentUser.reauthenticateWithCredential(credential);
+
+                    // Update password
+                    await auth.currentUser.updatePassword(newPassword);
+
+                    this.showSuccess('Password updated successfully!');
+                    e.target.reset();
+                } catch (error) {
+                    console.error('Password update error:', error);
+                    this.showError(error.message);
+                }
+            }
+
+            async handleNotificationSettingsSubmit(e) {
+                e.preventDefault();
+
+                const formData = new FormData(e.target);
+                const notificationPrefs = {};
+
+                // Collect all notification preferences
+                ['emailNewOpportunities', 'emailProposals', 'emailMessages', 'emailWeeklySummary',
+                 'browserNotifications', 'soundNotifications'].forEach(pref => {
+                    notificationPrefs[pref] = formData.has(pref);
+                });
+
+                const updateData = {
+                    preferences: {
+                        ...this.currentUser.preferences,
+                        ...notificationPrefs
+                    }
+                };
+
+                await this.updateProfile(updateData, 'Notification settings updated successfully!');
+            }
+
+            async updateProfile(updateData, successMessage) {
+                try {
+                    const result = await FirebaseService.updateUserProfile(this.currentUser.uid, updateData);
+
+                    if (result.success) {
+                        // Update local user data
+                        Object.assign(this.currentUser, updateData);
+                        this.updateUserInterface();
+                        this.hasUnsavedChanges = false;
+                        this.showSuccess(successMessage);
+                    } else {
+                        this.showError(result.error || 'Failed to update profile');
+                    }
+                } catch (error) {
+                    console.error('Profile update error:', error);
+                    this.showError('Failed to update profile');
+                }
+            }
+
+            formatUserType(userType) {
+                const types = {
+                    business: "Entrepreneur",
+                    investor: "Investor",
+                    banker: "Banking Partner",
+                    advisor: "Business Advisor"
+                };
+                return types[userType] || userType;
+            }
+
+            showSuccess(message) {
+                this.showToast(message, 'success');
+            }
+
+            showError(message) {
+                this.showToast(message, 'error');
+            }
+
+            showToast(message, type = 'info') {
+                const toast = document.getElementById('toast');
+                const icon = toast.querySelector('.toast-icon');
+                const messageEl = toast.querySelector('.toast-message');
+
+                const icons = {
+                    success: 'check-circle',
+                    error: 'alert-circle',
+                    warning: 'alert-triangle',
+                    info: 'info'
+                };
+
+                icon.setAttribute('data-lucide', icons[type] || icons.info);
+                messageEl.textContent = message;
+
+                toast.className = `toast ${type}`;
+                toast.classList.remove('hidden');
+
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 5000);
+
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+            }
+        }
+
+        // Global Functions
+        let profilePage;
+
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function logout() {
+            FirebaseService.signOut().then(() => {
+                window.location.href = '../index.html';
+            });
+        }
+
+        function resetPersonalForm() {
+            if (profilePage) {
+                profilePage.loadUserData();
+                profilePage.hasUnsavedChanges = false;
+            }
+        }
+
+        function resetProfessionalForm() {
+            if (profilePage) {
+                profilePage.loadUserData();
+                profilePage.hasUnsavedChanges = false;
+            }
+        }
+
+        function changeProfilePhoto() {
+            // Placeholder for photo upload functionality
+            alert('Photo upload functionality will be implemented in future updates.');
+        }
+
+        function exportAccountData() {
+            alert('Account data export functionality will be implemented in future updates.');
+        }
+
+        function showDeleteAccountModal() {
+            document.getElementById('deleteAccountModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideDeleteAccountModal() {
+            document.getElementById('deleteAccountModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            document.getElementById('deleteConfirmation').value = '';
+            document.getElementById('confirmDeleteBtn').disabled = true;
+        }
+
+        async function confirmDeleteAccount() {
+            try {
+                // In a real implementation, you would:
+                // 1. Re-authenticate the user
+                // 2. Delete user data from Firestore
+                // 3. Delete the Firebase Auth account
+
+                alert('Account deletion functionality will be implemented with proper safeguards.');
+                hideDeleteAccountModal();
+            } catch (error) {
+                console.error('Account deletion error:', error);
+                profilePage.showError('Failed to delete account');
+            }
+        }
+
+        function hideToast() {
+            document.getElementById('toast').classList.add('hidden');
+        }
+
+        // Initialize page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading spinner
+            setTimeout(() => {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }, 1000);
+
+            // Initialize profile page
+            profilePage = new ProfilePage();
+            profilePage.init();
+
+            // Initialize Lucide icons
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>

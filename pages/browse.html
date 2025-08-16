@@ -213,3 +213,852 @@
                     <div class="results-count">
                         <h3>Showing <span id="showingCount">0</span> of <span id="totalCount">0</span> business ideas</h3>
                     </div>
+
+                    <div class="view-toggle">
+                        <button class="view-btn grid-view active" data-view="grid" title="Grid View">
+                            <i data-lucide="grid-3x3"></i>
+                        </button>
+                        <button class="view-btn list-view" data-view="list" title="List View">
+                            <i data-lucide="list"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Business Ideas Grid -->
+                <div class="business-grid grid-layout" id="businessGrid">
+                    <!-- Loading state -->
+                    <div class="loading-container" id="loadingContainer">
+                        <div class="loading-spinner">
+                            <div class="spinner"></div>
+                            <p>Loading business opportunities...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Load More Button -->
+                <div class="load-more-container" id="loadMoreContainer">
+                    <button class="btn btn-outline" id="loadMoreBtn">
+                        <i data-lucide="chevron-down"></i>
+                        Load More Ideas
+                    </button>
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state hidden" id="emptyState">
+                    <div class="empty-icon">
+                        <i data-lucide="search-x"></i>
+                    </div>
+                    <h3>No business ideas found</h3>
+                    <p>Try adjusting your search filters or check back later for new opportunities.</p>
+                    <button class="btn btn-primary" onclick="clearAllFilters()">
+                        <i data-lucide="refresh-cw"></i>
+                        Reset Filters
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Business Idea Detail Modal -->
+    <div id="ideaDetailModal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeIdeaDetailModal()"></div>
+        <div class="modal-content modal-large">
+            <button class="modal-close" onclick="closeIdeaDetailModal()">
+                <i data-lucide="x"></i>
+            </button>
+
+            <div class="idea-detail-content" id="ideaDetailContent">
+                <!-- Idea details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Investment Modal -->
+    <div id="investmentModal" class="modal hidden">
+        <div class="modal-overlay" onclick="closeInvestmentModal()"></div>
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeInvestmentModal()">
+                <i data-lucide="x"></i>
+            </button>
+
+            <div class="investment-form-container">
+                <h2>Investment Proposal</h2>
+                <p>Submit your investment proposal for this business idea</p>
+
+                <form id="investmentForm">
+                    <input type="hidden" id="investmentIdeaId" name="ideaId">
+
+                    <div class="form-group">
+                        <label for="proposedAmount">Proposed Investment Amount (₹)</label>
+                        <input type="number" id="proposedAmount" name="proposedAmount" min="1000" step="1000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="equityPercentage">Equity Percentage (%)</label>
+                        <input type="number" id="equityPercentage" name="equityPercentage" min="0.1" max="100" step="0.1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="investmentTerms">Terms & Conditions</label>
+                        <textarea id="investmentTerms" name="terms" rows="4"
+                                  placeholder="Describe your investment terms, conditions, and expectations..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="investorMessage">Message to Entrepreneur</label>
+                        <textarea id="investorMessage" name="message" rows="3"
+                                  placeholder="Introduce yourself and explain why you're interested in this opportunity..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="closeInvestmentModal()">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i data-lucide="send"></i>
+                            Submit Proposal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden">
+        <div class="toast-content">
+            <i data-lucide="check-circle" class="toast-icon"></i>
+            <span class="toast-message">Success message</span>
+        </div>
+        <button class="toast-close" onclick="hideToast()">
+            <i data-lucide="x"></i>
+        </button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+
+    <!-- JavaScript Files -->
+    <script src="../assets/js/firebase-config.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/auth.js"></script>
+    <script src="../assets/js/business.js"></script>
+    <script src="../assets/js/investor.js"></script>
+
+    <script>
+        // Browse Page Application Logic
+        class BrowsePage {
+            constructor() {
+                this.businessIdeas = [];
+                this.filteredIdeas = [];
+                this.currentUser = null;
+                this.currentPage = 1;
+                this.itemsPerPage = 12;
+                this.currentView = 'grid';
+                this.isLoading = false;
+
+                this.filters = {
+                    search: '',
+                    category: '',
+                    funding: '',
+                    location: '',
+                    sort: 'newest'
+                };
+            }
+
+            async init() {
+                console.log('Initializing Browse Page...');
+
+                // Initialize authentication
+                this.initAuth();
+
+                // Initialize UI elements
+                this.initializeElements();
+
+                // Load business ideas
+                await this.loadBusinessIdeas();
+
+                // Initialize event listeners
+                this.bindEvents();
+
+                console.log('Browse Page initialized successfully');
+            }
+
+            initAuth() {
+                auth.onAuthStateChanged((user) => {
+                    if (user) {
+                        this.handleUserSignedIn(user);
+                    } else {
+                        this.handleUserSignedOut();
+                    }
+                });
+            }
+
+            async handleUserSignedIn(user) {
+                try {
+                    const profileResult = await FirebaseService.getUserProfile(user.uid);
+                    if (profileResult.success) {
+                        this.currentUser = {
+                            uid: user.uid,
+                            email: user.email,
+                            ...profileResult.data
+                        };
+                        this.updateUIForAuthenticatedUser();
+                    }
+                } catch (error) {
+                    console.error('Error handling user sign in:', error);
+                }
+            }
+
+            handleUserSignedOut() {
+                this.currentUser = null;
+                this.updateUIForUnauthenticatedUser();
+            }
+
+            updateUIForAuthenticatedUser() {
+                document.getElementById('authButtons').classList.add('hidden');
+                document.getElementById('userMenu').classList.remove('hidden');
+                document.getElementById('dashboardLink').style.display = 'block';
+                document.getElementById('profileLink').style.display = 'block';
+
+                this.updateUserDisplay();
+            }
+
+            updateUIForUnauthenticatedUser() {
+                document.getElementById('authButtons').classList.remove('hidden');
+                document.getElementById('userMenu').classList.add('hidden');
+                document.getElementById('dashboardLink').style.display = 'none';
+                document.getElementById('profileLink').style.display = 'none';
+            }
+
+            updateUserDisplay() {
+                if (!this.currentUser) return;
+
+                const userName = `${this.currentUser.profile.firstName} ${this.currentUser.profile.lastName}`;
+                document.getElementById('userName').textContent = userName;
+                document.getElementById('userType').textContent = this.formatUserType(this.currentUser.userType);
+                document.getElementById('avatarText').textContent =
+                    `${this.currentUser.profile.firstName[0]}${this.currentUser.profile.lastName[0]}`.toUpperCase();
+            }
+
+            initializeElements() {
+                // Cache DOM elements
+                this.elements = {
+                    searchInput: document.getElementById('searchInput'),
+                    categoryFilter: document.getElementById('categoryFilter'),
+                    fundingFilter: document.getElementById('fundingFilter'),
+                    locationFilter: document.getElementById('locationFilter'),
+                    sortFilter: document.getElementById('sortFilter'),
+                    businessGrid: document.getElementById('businessGrid'),
+                    loadMoreBtn: document.getElementById('loadMoreBtn'),
+                    viewButtons: document.querySelectorAll('.view-btn'),
+                    showingCount: document.getElementById('showingCount'),
+                    totalCount: document.getElementById('totalCount'),
+                    totalIdeasCount: document.getElementById('totalIdeasCount'),
+                    fundingTotal: document.getElementById('fundingTotal'),
+                    loadingContainer: document.getElementById('loadingContainer'),
+                    emptyState: document.getElementById('emptyState'),
+                    loadMoreContainer: document.getElementById('loadMoreContainer')
+                };
+            }
+
+            bindEvents() {
+                // Search input with debounce
+                this.elements.searchInput.addEventListener('input', this.debounce(() => {
+                    this.filters.search = this.elements.searchInput.value.trim();
+                    this.applyFilters();
+                }, 300));
+
+                // Filter dropdowns
+                this.elements.categoryFilter.addEventListener('change', () => {
+                    this.filters.category = this.elements.categoryFilter.value;
+                    this.applyFilters();
+                });
+
+                this.elements.fundingFilter.addEventListener('change', () => {
+                    this.filters.funding = this.elements.fundingFilter.value;
+                    this.applyFilters();
+                });
+
+                this.elements.locationFilter.addEventListener('change', () => {
+                    this.filters.location = this.elements.locationFilter.value;
+                    this.applyFilters();
+                });
+
+                this.elements.sortFilter.addEventListener('change', () => {
+                    this.filters.sort = this.elements.sortFilter.value;
+                    this.applyFilters();
+                });
+
+                // View toggle buttons
+                this.elements.viewButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        this.toggleView(btn.dataset.view);
+                    });
+                });
+
+                // Load more button
+                this.elements.loadMoreBtn.addEventListener('click', () => {
+                    this.loadMoreIdeas();
+                });
+
+                // Header scroll effect
+                window.addEventListener('scroll', this.debounce(() => {
+                    const header = document.getElementById('mainHeader');
+                    if (window.scrollY > 100) {
+                        header.classList.add('scrolled');
+                    } else {
+                        header.classList.remove('scrolled');
+                    }
+                }, 100));
+            }
+
+            async loadBusinessIdeas() {
+                this.isLoading = true;
+                this.showLoading();
+
+                try {
+                    const result = await FirebaseService.getBusinessIdeas({
+                        status: 'published',
+                        limit: 50 // Load more initially
+                    });
+
+                    if (result.success) {
+                        this.businessIdeas = result.data;
+                        this.updateStats();
+                        this.applyFilters();
+                    } else {
+                        this.showError('Failed to load business ideas');
+                    }
+                } catch (error) {
+                    console.error('Error loading business ideas:', error);
+                    this.showError('Failed to load business ideas');
+                } finally {
+                    this.isLoading = false;
+                    this.hideLoading();
+                }
+            }
+
+            applyFilters() {
+                let filtered = [...this.businessIdeas];
+
+                // Apply search filter
+                if (this.filters.search) {
+                    const query = this.filters.search.toLowerCase();
+                    filtered = filtered.filter(idea =>
+                        idea.title.toLowerCase().includes(query) ||
+                        idea.description.toLowerCase().includes(query) ||
+                        idea.category.toLowerCase().includes(query)
+                    );
+                }
+
+                // Apply category filter
+                if (this.filters.category) {
+                    filtered = filtered.filter(idea => idea.category === this.filters.category);
+                }
+
+                // Apply funding filter
+                if (this.filters.funding) {
+                    const [min, max] = this.parseFundingRange(this.filters.funding);
+                    filtered = filtered.filter(idea => {
+                        const amount = idea.fundingNeeded;
+                        return amount >= min && (max === null || amount <= max);
+                    });
+                }
+
+                // Apply location filter
+                if (this.filters.location) {
+                    filtered = filtered.filter(idea =>
+                        idea.location && idea.location.toLowerCase().includes(this.filters.location.toLowerCase())
+                    );
+                }
+
+                // Apply sorting
+                filtered.sort((a, b) => {
+                    switch (this.filters.sort) {
+                        case 'newest':
+                            return new Date(b.createdAt) - new Date(a.createdAt);
+                        case 'oldest':
+                            return new Date(a.createdAt) - new Date(b.createdAt);
+                        case 'funding-high':
+                            return b.fundingNeeded - a.fundingNeeded;
+                        case 'funding-low':
+                            return a.fundingNeeded - b.fundingNeeded;
+                        case 'popular':
+                            return (b.viewCount || 0) - (a.viewCount || 0);
+                        default:
+                            return new Date(b.createdAt) - new Date(a.createdAt);
+                    }
+                });
+
+                this.filteredIdeas = filtered;
+                this.currentPage = 1;
+                this.renderBusinessIdeas();
+                this.updateResultsCount();
+            }
+
+            renderBusinessIdeas() {
+                const startIndex = 0;
+                const endIndex = this.currentPage * this.itemsPerPage;
+                const ideasToShow = this.filteredIdeas.slice(startIndex, endIndex);
+
+                if (ideasToShow.length === 0) {
+                    this.showEmptyState();
+                    return;
+                }
+
+                this.hideEmptyState();
+
+                this.elements.businessGrid.innerHTML = ideasToShow.map(idea =>
+                    this.createBusinessIdeaCard(idea)
+                ).join('');
+
+                // Update load more button
+                this.updateLoadMoreButton();
+
+                // Reinitialize Lucide icons
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+            }
+
+            createBusinessIdeaCard(idea) {
+                const fundingAmount = this.formatCurrency(idea.fundingNeeded);
+                const timeAgo = this.timeAgo(idea.createdAt);
+                const category = this.capitalizeFirst(idea.category);
+
+                return `
+                    <div class="business-card" data-id="${idea.id}">
+                        <div class="business-card-header">
+                            <div class="business-category">${category}</div>
+                            <div class="business-views">
+                                <i data-lucide="eye"></i>
+                                ${idea.viewCount || 0}
+                            </div>
+                        </div>
+
+                        <div class="business-card-content">
+                            <h3 class="business-title">${idea.title}</h3>
+                            <p class="business-description">${this.truncateText(idea.description, 120)}</p>
+
+                            <div class="business-funding">
+                                <span class="funding-label">Funding Needed:</span>
+                                <span class="funding-amount">${fundingAmount}</span>
+                            </div>
+
+                            <div class="business-meta">
+                                <div class="business-author">
+                                    <div class="author-avatar">
+                                        ${idea.author ? idea.author.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'A'}
+                                    </div>
+                                    <span class="author-name">${idea.author ? idea.author.name : 'Anonymous'}</span>
+                                </div>
+                                <span class="business-time">${timeAgo}</span>
+                            </div>
+                        </div>
+
+                        <div class="business-card-footer">
+                            <button class="btn btn-outline btn-small" onclick="browsePage.viewBusinessIdea('${idea.id}')">
+                                <i data-lucide="eye"></i>
+                                View Details
+                            </button>
+                            ${this.currentUser && this.currentUser.userType === 'investor' ?
+                                `<button class="btn btn-primary btn-small" onclick="browsePage.showInvestmentModal('${idea.id}')">
+                                    <i data-lucide="trending-up"></i>
+                                    Invest
+                                </button>` :
+                                ''
+                            }
+                        </div>
+                    </div>
+                `;
+            }
+
+            toggleView(viewType) {
+                this.currentView = viewType;
+
+                // Update button states
+                this.elements.viewButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.view === viewType) {
+                        btn.classList.add('active');
+                    }
+                });
+
+                // Update grid layout
+                if (viewType === 'list') {
+                    this.elements.businessGrid.classList.remove('grid-layout');
+                    this.elements.businessGrid.classList.add('list-layout');
+                } else {
+                    this.elements.businessGrid.classList.remove('list-layout');
+                    this.elements.businessGrid.classList.add('grid-layout');
+                }
+            }
+
+            loadMoreIdeas() {
+                if (this.isLoading) return;
+
+                this.currentPage++;
+                const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+                const endIndex = this.currentPage * this.itemsPerPage;
+                const newIdeas = this.filteredIdeas.slice(startIndex, endIndex);
+
+                if (newIdeas.length > 0) {
+                    const newCardsHTML = newIdeas.map(idea => this.createBusinessIdeaCard(idea)).join('');
+                    this.elements.businessGrid.innerHTML += newCardsHTML;
+
+                    if (window.lucide) {
+                        lucide.createIcons();
+                    }
+                }
+
+                this.updateLoadMoreButton();
+                this.updateResultsCount();
+            }
+
+            updateLoadMoreButton() {
+                const totalShowing = this.currentPage * this.itemsPerPage;
+                const hasMore = totalShowing < this.filteredIdeas.length;
+
+                if (hasMore) {
+                    this.elements.loadMoreContainer.classList.remove('hidden');
+                } else {
+                    this.elements.loadMoreContainer.classList.add('hidden');
+                }
+            }
+
+            updateResultsCount() {
+                const showing = Math.min(this.currentPage * this.itemsPerPage, this.filteredIdeas.length);
+                this.elements.showingCount.textContent = showing;
+                this.elements.totalCount.textContent = this.filteredIdeas.length;
+            }
+
+            updateStats() {
+                this.elements.totalIdeasCount.textContent = this.businessIdeas.length;
+
+                const totalFunding = this.businessIdeas.reduce((sum, idea) => sum + idea.fundingNeeded, 0);
+                this.elements.fundingTotal.textContent = this.formatCurrency(totalFunding);
+            }
+
+            showLoading() {
+                this.elements.loadingContainer.classList.remove('hidden');
+                this.elements.businessGrid.innerHTML = '';
+            }
+
+            hideLoading() {
+                this.elements.loadingContainer.classList.add('hidden');
+            }
+
+            showEmptyState() {
+                this.elements.emptyState.classList.remove('hidden');
+                this.elements.businessGrid.innerHTML = '';
+                this.elements.loadMoreContainer.classList.add('hidden');
+            }
+
+            hideEmptyState() {
+                this.elements.emptyState.classList.add('hidden');
+            }
+
+            // Modal Functions
+            async viewBusinessIdea(ideaId) {
+                try {
+                    const result = await FirebaseService.getBusinessIdea(ideaId);
+                    if (result.success) {
+                        this.showIdeaDetailModal(result.data);
+                    }
+                } catch (error) {
+                    console.error('Error loading business idea:', error);
+                    this.showError('Failed to load business idea details');
+                }
+            }
+
+            showIdeaDetailModal(idea) {
+                const modal = document.getElementById('ideaDetailModal');
+                const content = document.getElementById('ideaDetailContent');
+
+                content.innerHTML = `
+                    <div class="idea-detail-header">
+                        <div class="idea-category">${this.capitalizeFirst(idea.category)}</div>
+                        <h2 class="idea-title">${idea.title}</h2>
+                        <div class="idea-funding">Funding Needed: ${this.formatCurrency(idea.fundingNeeded)}</div>
+                    </div>
+
+                    <div class="idea-detail-body">
+                        <div class="idea-description">
+                            <h3>Description</h3>
+                            <p>${idea.description}</p>
+                        </div>
+
+                        <div class="idea-timeline">
+                            <h3>Timeline</h3>
+                            <p>${idea.timeline}</p>
+                        </div>
+
+                        ${idea.projectedReturns ? `
+                            <div class="idea-returns">
+                                <h3>Projected Returns</h3>
+                                <p>${idea.projectedReturns}</p>
+                            </div>
+                        ` : ''}
+
+                        <div class="idea-author">
+                            <h3>About the Entrepreneur</h3>
+                            <div class="author-info">
+                                <div class="author-avatar-large">
+                                    ${idea.author ? idea.author.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'A'}
+                                </div>
+                                <div class="author-details">
+                                    <h4>${idea.author ? idea.author.name : 'Anonymous'}</h4>
+                                    <p>${idea.author ? idea.author.company : 'Company not specified'}</p>
+                                    <p>${idea.author ? idea.author.location : 'Location not specified'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="idea-detail-footer">
+                        ${this.currentUser && this.currentUser.userType === 'investor' ?
+                            `<button class="btn btn-primary" onclick="browsePage.showInvestmentModal('${idea.id}')">
+                                <i data-lucide="trending-up"></i>
+                                Make Investment Proposal
+                            </button>` :
+                            `<button class="btn btn-outline" onclick="window.location.href='../index.html#auth=register'">
+                                <i data-lucide="user-plus"></i>
+                                Join as Investor
+                            </button>`
+                        }
+                    </div>
+                `;
+
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            showInvestmentModal(ideaId) {
+                if (!this.currentUser || this.currentUser.userType !== 'investor') {
+                    this.showError('Please sign in as an investor to make proposals');
+                    return;
+                }
+
+                document.getElementById('investmentIdeaId').value = ideaId;
+                document.getElementById('investmentModal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+
+                // Initialize investment form
+                this.initInvestmentForm();
+            }
+
+            initInvestmentForm() {
+                const form = document.getElementById('investmentForm');
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await this.submitInvestmentProposal(form);
+                });
+            }
+
+            async submitInvestmentProposal(form) {
+                try {
+                    const formData = new FormData(form);
+                    const proposalData = {
+                        businessIdeaId: formData.get('ideaId'),
+                        proposedAmount: parseInt(formData.get('proposedAmount')),
+                        equity: parseFloat(formData.get('equityPercentage')) || 0,
+                        terms: formData.get('terms'),
+                        message: formData.get('message')
+                    };
+
+                    const result = await FirebaseService.createInvestmentProposal(proposalData);
+
+                    if (result.success) {
+                        this.showSuccess('Investment proposal submitted successfully!');
+                        this.closeInvestmentModal();
+                        form.reset();
+                    } else {
+                        this.showError(result.error || 'Failed to submit proposal');
+                    }
+                } catch (error) {
+                    console.error('Error submitting investment proposal:', error);
+                    this.showError('Failed to submit proposal');
+                }
+            }
+
+            closeIdeaDetailModal() {
+                document.getElementById('ideaDetailModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+
+            closeInvestmentModal() {
+                document.getElementById('investmentModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+
+            // Utility Functions
+            parseFundingRange(range) {
+                switch (range) {
+                    case '0-100000': return [0, 100000];
+                    case '100000-1000000': return [100000, 1000000];
+                    case '1000000-10000000': return [1000000, 10000000];
+                    case '10000000-50000000': return [10000000, 50000000];
+                    case '50000000+': return [50000000, null];
+                    default: return [0, null];
+                }
+            }
+
+            formatCurrency(amount) {
+                if (amount >= 10000000) {
+                    return `₹${(amount / 10000000).toFixed(1)}Cr`;
+                } else if (amount >= 100000) {
+                    return `₹${(amount / 100000).toFixed(1)}L`;
+                } else {
+                    return `₹${amount.toLocaleString('en-IN')}`;
+                }
+            }
+
+            formatUserType(userType) {
+                const types = {
+                    business: "Entrepreneur",
+                    investor: "Investor",
+                    banker: "Banking Partner",
+                    advisor: "Business Advisor"
+                };
+                return types[userType] || userType;
+            }
+
+            capitalizeFirst(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            }
+
+            truncateText(text, length) {
+                return text.length > length ? text.substring(0, length) + '...' : text;
+            }
+
+            timeAgo(timestamp) {
+                const now = new Date();
+                const time = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+                const diffInMs = now - time;
+                const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+                if (diffInDays === 0) return 'Today';
+                if (diffInDays === 1) return 'Yesterday';
+                if (diffInDays < 30) return `${diffInDays} days ago`;
+                if (diffInDays < 365) return `${Math.floor(diffInDays / 30)} months ago`;
+                return `${Math.floor(diffInDays / 365)} years ago`;
+            }
+
+            debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            showSuccess(message) {
+                this.showToast(message, 'success');
+            }
+
+            showError(message) {
+                this.showToast(message, 'error');
+            }
+
+            showToast(message, type = 'info') {
+                const toast = document.getElementById('toast');
+                const icon = toast.querySelector('.toast-icon');
+                const messageEl = toast.querySelector('.toast-message');
+
+                // Update icon based on type
+                const icons = {
+                    success: 'check-circle',
+                    error: 'alert-circle',
+                    warning: 'alert-triangle',
+                    info: 'info'
+                };
+
+                icon.setAttribute('data-lucide', icons[type] || icons.info);
+                messageEl.textContent = message;
+
+                toast.className = `toast ${type}`;
+                toast.classList.remove('hidden');
+
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 5000);
+
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+            }
+        }
+
+        // Global Functions
+        let browsePage;
+
+        function clearAllFilters() {
+            browsePage.filters = {
+                search: '',
+                category: '',
+                funding: '',
+                location: '',
+                sort: 'newest'
+            };
+
+            // Reset form elements
+            browsePage.elements.searchInput.value = '';
+            browsePage.elements.categoryFilter.value = '';
+            browsePage.elements.fundingFilter.value = '';
+            browsePage.elements.locationFilter.value = '';
+            browsePage.elements.sortFilter.value = 'newest';
+
+            browsePage.applyFilters();
+        }
+
+        function closeIdeaDetailModal() {
+            browsePage.closeIdeaDetailModal();
+        }
+
+        function closeInvestmentModal() {
+            browsePage.closeInvestmentModal();
+        }
+
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function logout() {
+            FirebaseService.signOut().then(() => {
+                window.location.href = '../index.html';
+            });
+        }
+
+        function hideToast() {
+            document.getElementById('toast').classList.add('hidden');
+        }
+
+        // Initialize page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading spinner
+            setTimeout(() => {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }, 1000);
+
+            // Initialize browse page
+            browsePage = new BrowsePage();
+            browsePage.init();
+
+            // Initialize Lucide icons
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>

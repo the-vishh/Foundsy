@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fundsy Admin Panel - Platform Management">
+    <title>Admin Panel - Fundsy</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/auth.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+
+    <style>
+        .admin-section {
+            padding-top: 90px;
+            min-height: 100vh;
+            background: var(--bg-secondary);
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            padding: var(--spacing-2xl) 0;
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .admin-title {
+            color: white;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .admin-subtitle {
+            opacity: 0.9;
+        }
+
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-2xl) 0;
+        }
+
+        .admin-stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+
+        .admin-stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .admin-stat-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .access-denied {
+            text-align: center;
+            padding: var(--spacing-3xl);
+            background: white;
+            border-radius: var(--radius-xl);
+            margin: var(--spacing-2xl);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .access-denied-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--spacing-lg);
+            color: var(--error-color);
+        }
+
+        .management-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-xl);
+        }
+
+        .management-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+        }
+
+        .management-card h3 {
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .danger-zone {
+            border-color: var(--error-color);
+            border-width: 2px;
+        }
+
+        .danger-zone h3 {
+            color: var(--error-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Loading Admin Panel...</p>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="header" id="mainHeader">
+        <nav class="navbar container">
+            <div class="nav-brand">
+                <img src="../assets/images/logo.svg" alt="Fundsy Logo" class="logo-img">
+                <span class="brand-text">Fundsy</span>
+                <span class="admin-badge">ADMIN</span>
+            </div>
+
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item">
+                    <a href="../index.html" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="browse.html" class="nav-link">Browse Ideas</a>
+                </li>
+                <li class="nav-item">
+                    <a href="dashboard.html" class="nav-link">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a href="admin.html" class="nav-link active">Admin</a>
+                </li>
+            </ul>
+
+            <!-- User Menu -->
+            <div class="user-menu" id="userMenu">
+                <div class="user-avatar" id="userAvatar" onclick="toggleUserDropdown()">
+                    <img src="" alt="User Avatar" class="avatar-img hidden" id="avatarImg">
+                    <span class="avatar-text" id="avatarText">A</span>
+                </div>
+                <div class="dropdown-menu hidden" id="userDropdown">
+                    <div class="dropdown-header">
+                        <span class="user-name" id="userName">Admin</span>
+                        <span class="user-type" id="userType">Administrator</span>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item logout-btn" onclick="logout()">
+                        <i data-lucide="log-out"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <i data-lucide="menu"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Admin Access Denied (shown to non-admin users) -->
+        <div id="accessDenied" class="access-denied hidden">
+            <div class="access-denied-icon">
+                <i data-lucide="shield-x"></i>
+            </div>
+            <h2>Access Denied</h2>
+            <p>You don't have permission to access the admin panel. This area is restricted to platform administrators only.</p>
+            <div style="margin-top: var(--spacing-xl);">
+                <button class="btn btn-primary" onclick="window.location.href='../index.html'">
+                    <i data-lucide="home"></i>
+                    Go to Home
+                </button>
+                <button class="btn btn-outline" onclick="window.location.href='dashboard.html'">
+                    <i data-lucide="layout-dashboard"></i>
+                    Go to Dashboard
+                </button>
+            </div>
+        </div>
+
+        <!-- Admin Panel (shown to admin users) -->
+        <div id="adminPanel" class="admin-section hidden">
+            <!-- Admin Header -->
+            <div class="admin-header">
+                <div class="container">
+                    <h1 class="admin-title">
+                        <i data-lucide="shield-check"></i>
+                        Admin Panel
+                    </h1>
+                    <p class="admin-subtitle">
+                        Platform management and administration tools
+                    </p>
+
+                    <!-- Admin Stats -->
+                    <div class="admin-stats">
+                        <div class="admin-stat-card">
+                            <span class="admin-stat-number" id="totalUsers">0</span>
+                            <span class="admin-stat-label">Total Users</span>
+                        </div>
+                        <div class="admin-stat-card">
+                            <span class="admin-stat-number" id="totalIdeas">0</span>
+                            <span class="admin-stat-label">Business Ideas</span>
+                        </div>
+                        <div class="admin-stat-card">
+                            <span class="admin-stat-number" id="totalProposals">0</span>
+                            <span class="admin-stat-label">Proposals</span>
+                        </div>
+                        <div class="admin-stat-card">
+                            <span class="admin-stat-number" id="totalFunding">₹0</span>
+                            <span class="admin-stat-label">Total Funding</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <!-- Management Tools -->
+                <div class="management-grid">
+                    <!-- User Management -->
+                    <div class="management-card">
+                        <h3>
+                            <i data-lucide="users"></i>
+                            User Management
+                        </h3>
+                        <p>Manage user accounts, verify profiles, and handle user-related issues.</p>
+                        <div class="management-actions" style="margin-top: var(--spacing-lg);">
+                            <button class="btn btn-outline btn-small" onclick="viewAllUsers()">
+                                <i data-lucide="eye"></i>
+                                View Users
+                            </button>
+                            <button class="btn btn-outline btn-small" onclick="exportUserData()">
+                                <i data-lucide="download"></i>
+                                Export Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Content Moderation -->
+                    <div class="management-card">
+                        <h3>
+                            <i data-lucide="file-text"></i>
+                            Content Moderation
+                        </h3>
+                        <p>Review and moderate business ideas, proposals, and user-generated content.</p>
+                        <div class="management-actions" style="margin-top: var(--spacing-lg);">
+                            <button class="btn btn-outline btn-small" onclick="moderateContent()">
+                                <i data-lucide="search"></i>
+                                Review Content
+                            </button>
+                            <button class="btn btn-outline btn-small" onclick="viewReports()">
+                                <i data-lucide="flag"></i>
+                                View Reports
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Analytics -->
+                    <div class="management-card">
+                        <h3>
+                            <i data-lucide="bar-chart-3"></i>
+                            Analytics & Reports
+                        </h3>
+                        <p>View platform analytics, user engagement metrics, and generate reports.</p>
+                        <div class="management-actions" style="margin-top: var(--spacing-lg);">
+                            <button class="btn btn-outline btn-small" onclick="viewAnalytics()">
+                                <i data-lucide="trending-up"></i>
+                                View Analytics
+                            </button>
+                            <button class="btn btn-outline btn-small" onclick="generateReport()">
+                                <i data-lucide="file-bar-chart"></i>
+                                Generate Report
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Platform Settings -->
+                    <div class="management-card">
+                        <h3>
+                            <i data-lucide="settings"></i>
+                            Platform Settings
+                        </h3>
+                        <p>Configure platform-wide settings, categories, and system parameters.</p>
+                        <div class="management-actions" style="margin-top: var(--spacing-lg);">
+                            <button class="btn btn-outline btn-small" onclick="editSettings()">
+                                <i data-lucide="edit"></i>
+                                Edit Settings
+                            </button>
+                            <button class="btn btn-outline btn-small" onclick="manageCategories()">
+                                <i data-lucide="tag"></i>
+                                Manage Categories
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Financial Management -->
+                    <div class="management-card">
+                        <h3>
+                            <i data-lucide="credit-card"></i>
+                            Financial Management
+                        </h3>
+                        <p>Monitor transactions, manage payment processing, and handle financial disputes.</p>
+                        <div class="management-actions" style="margin-top: var(--spacing-lg);">
+                            <button class="btn btn-outline btn-small" onclick="viewTransactions()">
+                                <i data-lucide="list"></i>
+                                View Transactions
+                            </button>
+                            <button class="btn btn-outline btn-small" onclick="handleDisputes()">
+                                <i data-lucide="alert-triangle"></i>
+                                Handle Disputes
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Communication -->
+                    <div class="management-card">
+                        <h3>
+                            <i data-lucide="mail"></i>
+                            Communication
+                        </h3>
+                        <p>Send announcements, manage notifications, and communicate with users.</p>
+                        <div class="management-actions" style="margin-top: var(--spacing-lg);">
+                            <button class="btn btn-outline btn-small" onclick="sendAnnouncement()">
+                                <i data-lucide="megaphone"></i>
+                                Send Announcement
+                            </button>
+                            <button class="btn btn-outline btn-small" onclick="manageNotifications()">
+                                <i data-lucide="bell"></i>
+                                Notifications
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- System Health -->
+                    <div class="management-card">
+                        <h3>
+                            <i data-lucide="activity"></i>
+                            System Health
+                        </h3>
+                        <p>Monitor system performance, database health, and server status.</p>
+                        <div class="management-actions" style="margin-top: var(--spacing-lg);">
+                            <button class="btn btn-outline btn-small" onclick="viewSystemStatus()">
+                                <i data-lucide="monitor"></i>
+                                System Status
+                            </button>
+                            <button class="btn btn-outline btn-small" onclick="viewLogs()">
+                                <i data-lucide="file-text"></i>
+                                View Logs
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Security -->
+                    <div class="management-card">
+                        <h3>
+                            <i data-lucide="shield"></i>
+                            Security & Compliance
+                        </h3>
+                        <p>Manage security settings, compliance requirements, and audit trails.</p>
+                        <div class="management-actions" style="margin-top: var(--spacing-lg);">
+                            <button class="btn btn-outline btn-small" onclick="securityAudit()">
+                                <i data-lucide="search"></i>
+                                Security Audit
+                            </button>
+                            <button class="btn btn-outline btn-small" onclick="complianceReport()">
+                                <i data-lucide="shield-check"></i>
+                                Compliance
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Danger Zone -->
+                    <div class="management-card danger-zone">
+                        <h3>
+                            <i data-lucide="alert-triangle"></i>
+                            Danger Zone
+                        </h3>
+                        <p>Critical administrative actions that require careful consideration.</p>
+                        <div class="management-actions" style="margin-top: var(--spacing-lg);">
+                            <button class="btn btn-outline btn-small" onclick="emergencyMaintenance()" style="color: var(--error-color); border-color: var(--error-color);">
+                                <i data-lucide="alert-circle"></i>
+                                Emergency Mode
+                            </button>
+                            <button class="btn btn-outline btn-small" onclick="backupDatabase()" style="color: var(--warning-color); border-color: var(--warning-color);">
+                                <i data-lucide="database"></i>
+                                Backup Database
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="management-card" style="margin-top: var(--spacing-xl);">
+                    <h3>
+                        <i data-lucide="clock"></i>
+                        Recent Admin Activity
+                    </h3>
+                    <div class="activity-list" id="adminActivity">
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i data-lucide="user-plus"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">New user registration approved</div>
+                                <div class="activity-description">john.doe@example.com registered as Investor</div>
+                                <div class="activity-time">2 hours ago</div>
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i data-lucide="flag"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Content reported</div>
+                                <div class="activity-description">Business idea "AI Startup" flagged for review</div>
+                                <div class="activity-time">4 hours ago</div>
+                            </div>
+                        </div>
+
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i data-lucide="settings"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">Platform settings updated</div>
+                                <div class="activity-description">Minimum investment amount changed to ₹50,000</div>
+                                <div class="activity-time">1 day ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden">
+        <div class="toast-content">
+            <i data-lucide="check-circle" class="toast-icon"></i>
+            <span class="toast-message">Success message</span>
+        </div>
+        <button class="toast-close" onclick="hideToast()">
+            <i data-lucide="x"></i>
+        </button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-storage-compat.js"></script>
+
+    <!-- JavaScript Files -->
+    <script src="../assets/js/firebase-config.js"></script>
+    <script src="../assets/js/utils.js"></script>
+    <script src="../assets/js/auth.js"></script>
+
+    <script>
+        // Admin Panel Application Logic
+        class AdminPanel {
+            constructor() {
+                this.currentUser = null;
+                this.isAdmin = false;
+                this.platformStats = {};
+            }
+
+            async init() {
+                console.log('Initializing Admin Panel...');
+
+                // Initialize authentication
+                this.initAuth();
+
+                console.log('Admin Panel initialized successfully');
+            }
+
+            initAuth() {
+                auth.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        await this.handleUserSignedIn(user);
+                    } else {
+                        // Redirect to home page if not authenticated
+                        window.location.href = '../index.html';
+                    }
+                });
+            }
+
+            async handleUserSignedIn(user) {
+                try {
+                    const profileResult = await FirebaseService.getUserProfile(user.uid);
+                    if (profileResult.success) {
+                        this.currentUser = {
+                            uid: user.uid,
+                            email: user.email,
+                            ...profileResult.data
+                        };
+
+                        // Check if user is admin
+                        this.isAdmin = this.checkAdminAccess();
+
+                        if (this.isAdmin) {
+                            await this.loadAdminPanel();
+                        } else {
+                            this.showAccessDenied();
+                        }
+                    } else {
+                        this.showError('Failed to load user profile');
+                        this.showAccessDenied();
+                    }
+                } catch (error) {
+                    console.error('Error handling admin authentication:', error);
+                    this.showAccessDenied();
+                }
+            }
+
+            checkAdminAccess() {
+                // In a real implementation, you would check:
+                // 1. User role in database
+                // 2. Admin permissions
+                // 3. Custom claims in Firebase Auth
+
+                // For demo purposes, checking specific email domains or hardcoded admins
+                const adminEmails = [
+                    'admin@fundfound.com',
+                    'admin@foundsy-platforms.firebaseapp.com'
+                ];
+
+                return adminEmails.includes(this.currentUser.email) ||
+                       this.currentUser.userType === 'admin' ||
+                       this.currentUser.isAdmin === true;
+            }
+
+            showAccessDenied() {
+                document.getElementById('accessDenied').classList.remove('hidden');
+                document.getElementById('adminPanel').classList.add('hidden');
+            }
+
+            async loadAdminPanel() {
+                document.getElementById('accessDenied').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+
+                this.updateUserDisplay();
+                await this.loadPlatformStats();
+            }
+
+            updateUserDisplay() {
+                document.getElementById('userName').textContent =
+                    `${this.currentUser.profile.firstName} ${this.currentUser.profile.lastName}` || 'Admin';
+                document.getElementById('userType').textContent = 'Administrator';
+                document.getElementById('avatarText').textContent = 'A';
+            }
+
+            async loadPlatformStats() {
+                try {
+                    // Load platform statistics
+                    // In a real implementation, you would make Firebase queries to get actual stats
+
+                    // Placeholder stats - replace with real Firebase queries
+                    this.platformStats = {
+                        totalUsers: 127,
+                        totalIdeas: 43,
+                        totalProposals: 89,
+                        totalFunding: 15000000 // ₹1.5Cr
+                    };
+
+                    this.updateStatsDisplay();
+                } catch (error) {
+                    console.error('Error loading platform stats:', error);
+                    this.showError('Failed to load platform statistics');
+                }
+            }
+
+            updateStatsDisplay() {
+                document.getElementById('totalUsers').textContent = this.platformStats.totalUsers;
+                document.getElementById('totalIdeas').textContent = this.platformStats.totalIdeas;
+                document.getElementById('totalProposals').textContent = this.platformStats.totalProposals;
+                document.getElementById('totalFunding').textContent = this.formatCurrency(this.platformStats.totalFunding);
+            }
+
+            formatCurrency(amount) {
+                if (amount >= 10000000) {
+                    return `₹${(amount / 10000000).toFixed(1)}Cr`;
+                } else if (amount >= 100000) {
+                    return `₹${(amount / 100000).toFixed(1)}L`;
+                } else {
+                    return `₹${amount.toLocaleString('en-IN')}`;
+                }
+            }
+
+            showSuccess(message) {
+                this.showToast(message, 'success');
+            }
+
+            showError(message) {
+                this.showToast(message, 'error');
+            }
+
+            showToast(message, type = 'info') {
+                const toast = document.getElementById('toast');
+                const icon = toast.querySelector('.toast-icon');
+                const messageEl = toast.querySelector('.toast-message');
+
+                const icons = {
+                    success: 'check-circle',
+                    error: 'alert-circle',
+                    warning: 'alert-triangle',
+                    info: 'info'
+                };
+
+                icon.setAttribute('data-lucide', icons[type] || icons.info);
+                messageEl.textContent = message;
+
+                toast.className = `toast ${type}`;
+                toast.classList.remove('hidden');
+
+                setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 5000);
+
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+            }
+        }
+
+        // Global Admin Functions
+        let adminPanel;
+
+        // User Management Functions
+        function viewAllUsers() {
+            alert('User management interface will be implemented. This would show a detailed list of all platform users with filtering and management options.');
+        }
+
+        function exportUserData() {
+            alert('User data export functionality will be implemented. This would generate and download user analytics and reports.');
+        }
+
+        // Content Moderation Functions
+        function moderateContent() {
+            alert('Content moderation interface will be implemented. This would show flagged content for admin review.');
+        }
+
+        function viewReports() {
+            alert('Reports management interface will be implemented. This would show user-reported content and issues.');
+        }
+
+        // Analytics Functions
+        function viewAnalytics() {
+            alert('Analytics dashboard will be implemented. This would show detailed platform usage analytics.');
+        }
+
+        function generateReport() {
+            alert('Report generation functionality will be implemented. This would create custom platform reports.');
+        }
+
+        // Settings Functions
+        function editSettings() {
+            alert('Platform settings interface will be implemented. This would allow modification of platform-wide configurations.');
+        }
+
+        function manageCategories() {
+            alert('Category management interface will be implemented. This would allow adding/editing business categories.');
+        }
+
+        // Financial Functions
+        function viewTransactions() {
+            alert('Transaction management interface will be implemented. This would show all financial transactions on the platform.');
+        }
+
+        function handleDisputes() {
+            alert('Dispute resolution interface will be implemented. This would manage financial disputes and issues.');
+        }
+
+        // Communication Functions
+        function sendAnnouncement() {
+            alert('Announcement system will be implemented. This would allow sending platform-wide notifications to users.');
+        }
+
+        function manageNotifications() {
+            alert('Notification management interface will be implemented. This would manage system-wide notification settings.');
+        }
+
+        // System Functions
+        function viewSystemStatus() {
+            alert('System monitoring interface will be implemented. This would show server health, database status, and performance metrics.');
+        }
+
+        function viewLogs() {
+            alert('Log management interface will be implemented. This would show system logs and error reports.');
+        }
+
+        // Security Functions
+        function securityAudit() {
+            alert('Security audit interface will be implemented. This would show security analysis and vulnerability reports.');
+        }
+
+        function complianceReport() {
+            alert('Compliance reporting interface will be implemented. This would generate compliance and regulatory reports.');
+        }
+
+        // Danger Zone Functions
+        function emergencyMaintenance() {
+            if (confirm('Are you sure you want to enable emergency maintenance mode? This will make the platform inaccessible to all users.')) {
+                alert('Emergency maintenance mode functionality will be implemented. This would temporarily disable platform access.');
+            }
+        }
+
+        function backupDatabase() {
+            if (confirm('Are you sure you want to initiate a database backup? This may take several minutes.')) {
+                alert('Database backup functionality will be implemented. This would create a full platform backup.');
+            }
+        }
+
+        // Utility Functions
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function logout() {
+            FirebaseService.signOut().then(() => {
+                window.location.href = '../index.html';
+            });
+        }
+
+        function hideToast() {
+            document.getElementById('toast').classList.add('hidden');
+        }
+
+        // Initialize page when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading spinner
+            setTimeout(() => {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }, 1000);
+
+            // Initialize admin panel
+            adminPanel = new AdminPanel();
+            adminPanel.init();
+
+            // Initialize Lucide icons
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>

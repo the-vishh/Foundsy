@@ -1,6 +1,4 @@
 // Real Business Idea Posting System
-// Add this to your business.js file or create a new file
-
 const BusinessIdeaManager = {
   // State management
   state: {

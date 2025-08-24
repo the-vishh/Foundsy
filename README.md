@@ -65,11 +65,7 @@
 
 ## 🚀 Live Demo
 
-<<<<<<< HEAD
 🌐 **Foundsy Website**: [https://foundsy.onrender.com](https://foundsy.onrender.com)
-=======
-🌐 **Website**: [https://foundsy.onrender.com](https://foundsy.onrender.com)
->>>>>>> 789ca3f272ac2ac3f2e7ed44aee138d380203367
 
 ### Demo Credentials
 ```

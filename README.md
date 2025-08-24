@@ -284,7 +284,7 @@ FIREBASE_PROJECT_ID=your-project-id
 - **Resource Library**: Share industry best practices
 - **Progress Tracking**: Monitor client milestones and success
 
-## 🌈 User Roles
+## ✨ User Roles
 
 | Role | Primary Functions | Access Level | Key Features |
 |------|------------------|--------------|--------------|

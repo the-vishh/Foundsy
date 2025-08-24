@@ -67,6 +67,7 @@
 
 🌐 **Foundsy Website**: [https://foundsy.onrender.com](https://foundsy.onrender.com)
 
+
 ### Demo Credentials
 ```
 Entrepreneur: demo@entrepreneur.com / password123

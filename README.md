@@ -1,4 +1,4 @@
-# 🚀 F - Smart Investment Platform
+# 🚀 Foundsy - Smart Investment Platform
 
 [![Firebase](https://img.shields.io/badge/Firebase-Ready-orange)](https://firebase.google.com/)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
@@ -65,8 +65,7 @@
 
 ## 🚀 Live Demo
 
-🌐 **Render**: [https://foundsy.onrender.com](https://foundsy.onrender.com)
-**The website is live**
+🌐 **Foundsy Website**: [https://foundsy.onrender.com](https://foundsy.onrender.com)
 
 ### Demo Credentials
 ```
@@ -102,7 +101,7 @@ Advisor: demo@advisor.com / password123
 ## 📁 Project Structure
 
 ```
-F/
+Foundsy/
 ├── 📄 index.html                    # Main application entry point
 ├── 🔧 firebase.json                 # Firebase configuration
 ├── 📦 package.json                  # Node.js dependencies
@@ -135,7 +134,7 @@ F/
 
 ## ⚡ Quick Start
 
-Get F running locally in under 5 minutes:
+Get Foundsy running locally in under 5 minutes:
 
 ```bash
 # 1. Clone the repository
@@ -172,7 +171,7 @@ Ensure you have the following installed:
 1. **Clone and Install**
    ```bash
    git clone https://github.com/the-vishh/Foundsy.git
-   cd F
+   cd Foundsy
    npm install
    ```
 
@@ -297,7 +296,7 @@ FIREBASE_PROJECT_ID=your-project-id
 
 ## 🔒 Security
 
-Security is a top priority for F. Here's how we protect user data:
+Security is a top priority for Foundsy. Here's how we protect user data:
 
 ### Data Protection
 - **End-to-End Encryption**: All sensitive communications are encrypted
@@ -429,7 +428,7 @@ Found a bug? Help us fix it:
 - ✅ Document upload and management
 - ✅ Real-time messaging system
 
-### 🚀 Next Release (v1.1) - Q2 2024
+### 🚀 Next Release (v1.1) -
 - 🔄 Advanced AI matching algorithms
 - 🔄 Video calling integration
 - 🔄 Enhanced analytics dashboard
@@ -460,7 +459,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## 🙏 Acknowledgments
 
-Special thanks to these amazing resources that made F possible:
+Special thanks to these amazing resources that made Foundsy possible:
 
 ### Technologies
 - 🔥 **[Firebase](https://firebase.google.com/)** - Robust backend-as-a-service platform
@@ -496,7 +495,7 @@ Special thanks to these amazing resources that made F possible:
 
 <div align="center">
 
-**[⬆ Back to Top](#-F---smart-investment-platform)**
+**[⬆ Back to Top](#-Foundsy---smart-investment-platform)**
 
 Made with ❤️ by [@the-vishh](https://github.com/the-vishh)
 

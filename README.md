@@ -30,7 +30,6 @@ A modern, intelligent investment platform built with HTML, CSS, and JavaScript. 
 - [📊 Roadmap](#-roadmap)
 - [📄 License](#-license)
 - [🙏 Acknowledgments](#-acknowledgments)
->>>>>>> 830ce1e679f7c14e61f2d84fa63758f3a5f1ee56
 
 ## ✨ Features
 

@@ -65,8 +65,7 @@
 
 ## 🚀 Live Demo
 
-🌐 **Render**: [https://foundsy.onrender.com](https://foundsy.onrender.com)
-**The website is live**
+🌐 **Website**: [https://foundsy.onrender.com](https://foundsy.onrender.com)
 
 ### Demo Credentials
 ```
